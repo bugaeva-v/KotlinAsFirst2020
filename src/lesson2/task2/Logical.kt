@@ -3,6 +3,7 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
+import kotlin.math.*
 
 /**
  * Пример
@@ -48,7 +49,11 @@ fun daysInMonth(month: Int, year: Int): Int = TODO()
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean = TODO()
+): Boolean {
+    if (r1 <= r2 && r2 - sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) >= r1)
+        return true
+    return false
+}
 
 /**
  * Средняя (3 балла)
@@ -59,4 +64,9 @@ fun circleInside(
  * кирпич 4 х 4 х 4 пройдёт через отверстие 4 х 4.
  * Вернуть true, если кирпич пройдёт
  */
-fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean = TODO()
+fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
+    if (c <= s && b <= r || c <= r && b <= s) return true
+    if (a <= s && b <= r || a <= r && b <= s) return true
+    if (c <= s && a <= r || c <= r && a <= s) return true
+    return false
+}

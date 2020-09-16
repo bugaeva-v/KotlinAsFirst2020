@@ -72,7 +72,16 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var x = n
+    var sum = 0
+    if (x == 0) return 0
+    while (x != 0) {
+        sum++
+        x /= 10
+    }
+    return sum
+}
 
 /**
  * Простая (2 балла)
@@ -190,7 +199,9 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double {
+    TODO()
+}
 
 /**
  * Сложная (4 балла)
@@ -201,7 +212,25 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var q = 1
+    if (n == 1) return 1
+    var num = 1
+    var digit = 1
+    while (n<q*q) {
+        var x = q * q
+        while (x != 0) {
+            num++
+            x /= 10
+            if (num == n) {
+                digit = (q * q / powDev(digitNumber(x))) % 10//
+                break
+            }
+        }
+        q++
+    }
+    return digit
+}
 
 /**
  * Сложная (5 баллов)
@@ -212,4 +241,33 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+
+fun powDev(rank: Int): Int {
+    var dev = 1
+    for (i in 1..rank)
+        dev *= 10
+    return dev
+}
+
+fun fibSequenceDigit(n: Int): Int {
+    if (n == 1) return 1
+    var num = 1
+    var x1 = 1
+    var x2 = 1
+    var digit = 0
+    while (num < n) {
+        var x = x2
+        while (x != 0) {
+            num++
+            x /= 10
+            if (num == n) {
+                digit = (x2 / powDev(digitNumber(x))) % 10//
+                break
+            }
+        }
+        x = x1 + x2
+        x1 = x2
+        x2 = x
+    }
+    return digit
+}

@@ -3,6 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import lesson3.task1.digitNumber
 import kotlin.math.sqrt
 
 // Урок 4: списки
@@ -241,7 +242,41 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+
+fun dozens(x: Int, ch1: String, ch2: String, ch3: String): String {
+    var str = ""
+    when (x) {
+        9 -> str += ch1 + ch3
+        8 -> str += ch2 + ch1 + ch1 + ch1
+        7 -> str += ch2 + ch1 + ch1
+        6 -> str += ch2 + ch1
+        5 -> str += ch2
+        4 -> str += ch1 + ch2
+        3 -> str += ch1 + ch1 + ch1
+        2 -> str += ch1 + ch1
+        1 -> str += ch1
+    }
+    return str
+}
+
+fun roman(n: Int): String {
+    var str = ""
+    var num = n
+    var n1000 = num / 1000
+    num %= 1000
+    var n100 = num / 100
+    num %= 100
+    var n10 = num / 10
+    num %= 10
+    while (n1000 != 0) {
+        str += 'M'
+        n1000--
+    }
+    str += dozens(n100, "C", "D", "M")
+    str += dozens(n10, "X", "L", "C")
+    str += dozens(num, "I", "V", "X")
+    return str
+}
 
 /**
  * Очень сложная (7 баллов)
@@ -250,4 +285,52 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+
+val map = mapOf(
+    0 to "", 1 to "один", 2 to "два", 3 to "три", 4 to "четыре", 5 to "пять", 6 to "шесть", 7 to "семь",
+    8 to "восемь", 9 to "девять", 10 to "десять", 11 to "одиннадцать", 12 to "двенадцать", 13 to "тринадцать",
+    14 to "четырнадцать", 15 to "пятнадцать", 16 to "шестнадцать", 17 to "семнадцать", 18 to "восемнадцать",
+    19 to "девятнадцать", 20 to "двадцать", 30 to "тридцать", 40 to "сорок", 50 to "пятьдесят", 60 to "шестьдесят",
+    70 to "семьдесят", 80 to "восемьдесят", 90 to "девяноста", 100 to "сто", 200 to "двести", 300 to "триста",
+    400 to "четыреста", 500 to "пятьсот", 600 to "шестьсот", 700 to "семьсот", 800 to "восемьсот", 900 to "девятьсот",
+    1001 to "одна", 1002 to "две"
+)
+
+fun russian(n: Int): String {
+    var number = n
+    val numeric = Array(6, { 0 })
+    var str = ""
+    var i = 5
+    while (number > 0) {
+        numeric[i] = number % 10
+        number /= 10
+        i--
+    }
+    if (n >= 1000) {
+        if (numeric[0] != 0) str += map[numeric[0] * 100] + ' ' // добавление в строку разряда сотен тысяч
+        if (numeric[1] != 1) { // -//- десятков и единиц, которые не пишутся слитно
+            str += map[numeric[1] * 10] // -//-
+            if (numeric[1] != 0) str += ' '
+            if (numeric[2] !in 0..2) str += map[numeric[2]] + ' '
+            else if (numeric[2] in 1..2) str += map[numeric[2] + 1000] + ' '
+        } else if (numeric[1] == 1) str += map[10 + numeric[2]] + ' '
+        str += when (numeric[2]) {
+            1 -> "тысяча"
+            in 2..4 -> "тысячи"
+            else -> "тысяч"
+        }
+        if (numeric[3] + numeric[4] + numeric[5] != 0) str += ' '
+    }
+    if (numeric[3] != 0) {
+        str += map[numeric[3] * 100]
+    }
+    if (numeric[4] + numeric[5] != 0 && numeric[3] != 0) str += ' '
+    if (numeric[4] * 10 + numeric[5] > 20) {
+        str += map[numeric[4] * 10]
+        if (numeric[5] > 0) {
+            if (numeric[4] != 0) str += ' '
+            str += map[numeric[5]]
+        }
+    } else str += map[numeric[4] * 10 + numeric[5]]
+    return str
+}
