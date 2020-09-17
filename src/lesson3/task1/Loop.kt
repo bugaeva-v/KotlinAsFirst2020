@@ -72,10 +72,11 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int {
+fun digitNumber(n: Int, forLesson: Boolean = true): Int {
     var x = n
     var sum = 0
-    if (x == 0) return 0
+    if (x == 0 && forLesson) return 1
+    else if ((x == 0 && !forLesson)) return 0 // я чуть-чуть изменила, чтобы использовать в последних 2х функциях
     while (x != 0) {
         sum++
         x /= 10
@@ -213,17 +214,17 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var q = 1
+    var q = 2
     if (n == 1) return 1
     var num = 1
     var digit = 1
-    while (n<q*q) {
+    while (num != n) {
         var x = q * q
         while (x != 0) {
             num++
-            x /= 10
+            x /= 10 // число цифр в х - количество десятков, которые нужно убрать в квадрате числа q, чтобы дойти до нужной цифры
             if (num == n) {
-                digit = (q * q / powDev(digitNumber(x))) % 10//
+                digit = (q * q / powDev(digitNumber(x, false))) % 10
                 break
             }
         }
@@ -255,13 +256,13 @@ fun fibSequenceDigit(n: Int): Int {
     var x1 = 1
     var x2 = 1
     var digit = 0
-    while (num < n) {
+    while (num != n) {
         var x = x2
         while (x != 0) {
             num++
             x /= 10
             if (num == n) {
-                digit = (x2 / powDev(digitNumber(x))) % 10//
+                digit = (x2 / powDev(digitNumber(x, false))) % 10
                 break
             }
         }
