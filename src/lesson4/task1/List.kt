@@ -314,11 +314,13 @@ fun russian(n: Int): String {
             if (numeric[2] !in 0..2) str += map[numeric[2]] + ' '
             else if (numeric[2] in 1..2) str += map[numeric[2] + 1000] + ' '
         } else if (numeric[1] == 1) str += map[10 + numeric[2]] + ' '
-        str += when (numeric[2]) {
-            1 -> "тысяча"
-            in 2..4 -> "тысячи"
-            else -> "тысяч"
-        }
+        str += if (numeric[1] != 1) {
+            when (numeric[2]) {
+                1 -> "тысяча"
+                in 2..4 -> "тысячи"
+                else -> "тысяч"
+            }
+        } else "тысяч"
         if (numeric[3] + numeric[4] + numeric[5] != 0) str += ' '
     }
     if (numeric[3] != 0) {
