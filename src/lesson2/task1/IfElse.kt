@@ -122,13 +122,13 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if (a > b + c || b > a + c || c > a + b) return -1
-    if (a * a < b * b + c * c && b * b < a * a + c * c && c * c < b * b + a * a) return 0
-    if (a * a == b * b + c * c || b * b == a * a + c * c || c * c == b * b + a * a) return 1
-    if (a * a > b * b + c * c || b * b > a * a + c * c || c * c > b * b + a * a) return 2
-    return -2
-}
+fun triangleKind(a: Double, b: Double, c: Double): Int =
+    if (a > b + c || b > a + c || c > a + b) -1
+    else if (a * a < b * b + c * c && b * b < a * a + c * c && c * c < b * b + a * a) 0
+    else if (a * a == b * b + c * c || b * b == a * a + c * c || c * c == b * b + a * a) 1
+    else if (a * a > b * b + c * c || b * b > a * a + c * c || c * c > b * b + a * a) 2
+    else -2
+
 
 /**
  * Средняя (3 балла)
@@ -138,12 +138,12 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (c > b || a > d) return -1
-    if (b == c || d == a) return 0
-    if (a < c && b < d) return b - c
-    if (c < a && d < b) return d - a
-    if (a <= c && d <= b) return d - c
-    if (c <= a && b <= d) return b - a
-    return -2
-}
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int =
+    if (c > b || a > d)  -1
+    else if (b == c || d == a)  0
+    else if (a < c && b < d)  b - c
+    else if (c < a && d < b)  d - a
+    else if (a <= c && d <= b)  d - c
+    else if (c <= a && b <= d)  b - a
+    else -2
+
