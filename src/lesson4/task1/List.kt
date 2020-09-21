@@ -264,9 +264,9 @@ fun roman(n: Int): String {
     var num = n
     var n1000 = num / 1000
     num %= 1000
-    var n100 = num / 100
+    val n100 = num / 100
     num %= 100
-    var n10 = num / 10
+    val n10 = num / 10
     num %= 10
     while (n1000 != 0) {
         str += 'M'
