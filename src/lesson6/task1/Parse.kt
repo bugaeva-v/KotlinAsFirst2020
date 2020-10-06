@@ -76,7 +76,7 @@ fun main() {
  */
 val map = mapOf(
     "января" to Pair(1, 31),
-    "февраля" to Pair(2, 29),
+    "февраля" to Pair(2, 28),
     "марта" to Pair(3, 31),
     "апреля" to Pair(4, 30),
     "мая" to Pair(5, 31),
@@ -89,24 +89,18 @@ val map = mapOf(
     "декабря" to Pair(12, 31)
 )
 
-fun sumOfDays(month: String, year: Int): Int {
-    if (month == "февраля") {
-        return if (year % 400 == 0 || year % 100 != 0 && year % 4 == 0) 29
-        else 28
-    }
-    if (map[month] == null)
-        return 0
-    return (map[month] ?: error("")).second
-}
+fun sumOfDays(month: String, year: Int): Pair<Int, Int>? =
+    if (month == "февраля" && (year % 400 == 0 || year % 100 != 0 && year % 4 == 0)) Pair(2, 29)
+    else map[month]
 
 fun dateStrToDigit(str: String): String {
-    val list = str.split(" ")
     if (!str.matches(Regex("""\d+ [а-я]+ \d+"""))) return ""
+    val list = str.split(" ")
     val day = list[0].toInt()
-    val month = map[list[1]]?.first
     val year = list[2].toInt()
-    if (day !in 1..sumOfDays(list[1], year)) return ""
-    return String.format("%02d.%02d.%d", day, month, year)
+    val month = sumOfDays(list[1], year) ?: return ""
+    if (day !in 1..month.second) return ""
+    return String.format("%02d.%02d.%d", day, month.first, year)
 }
 
 /**
