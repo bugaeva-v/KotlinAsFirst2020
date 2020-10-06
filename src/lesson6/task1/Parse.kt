@@ -109,7 +109,7 @@ fun dateStrToDigit(str: String): String {
         val year = list[2].toInt()
         if (month == null || day !in 1..sumOfDays(list[1], year))
             ""
-        else String.format("%02d.%s.%02d", day, month, year)
+        else String.format("%02d.%s.%d", day, month, year)
     } catch (e: IndexOutOfBoundsException) {
         ""
     }
@@ -178,16 +178,6 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    /* var list = try {
-        expression.split(" ")
-    } catch (e: IllegalArgumentException) {
-        throw e
-    }
-    var lastCh = try {
-        list[0]
-    } catch (e: IndexOutOfBoundsException) {
-        return 0
-    } */
     if (!expression.matches(Regex("""(\d+ [+-](?= \d+) )*\d+$"""))) throw IllegalArgumentException()
     var list = expression.split(" ")
     var lastCh = "+"
@@ -328,11 +318,6 @@ fun indexForEnd(
 
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (!commands.matches(Regex("""[\[\]+>\-< ]*"""))) throw IllegalArgumentException()
-    /*try {
-        commands[limit - 1]
-    } catch (e: IllegalStateException) {
-        if (!commands.contains(Regex("""([+>\-=< ]*(\[[+>\-=< ]+\])*)*"""))) throw e
-    }*/
     var startCycles = 0
     var endCycles = 0
     for (i in commands)
@@ -346,9 +331,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var indexForCommands = 0
     var sumOfCommands = 0
     while (indexForCommands < commands.length && sumOfCommands < limit) {
-        //println("$indexForList  $indexForCommands")
+        println("$indexForList  $indexForCommands")
         if (indexForList >= list.size) {
-            //print("!!!!!!!!!!!!!${list.size}!!!!!!!!!!!!!")
+            print("!!!!!!!!!!!!!${list.size}!!!!!!!!!!!!!")
             throw IllegalStateException()
         }
         //try {
@@ -358,14 +343,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             '+' -> list[indexForList]++
             '-' -> list[indexForList]--
             '[' -> if (list[indexForList] == 0) {
-                //print("         indexForEnd = ${indexForEnd(commands, indexForCommands)} ")
+                print("         indexForEnd = ${indexForEnd(commands, indexForCommands)} ")
                 indexForCommands = indexForEnd(commands, indexForCommands)
             }
             ']' -> if (list[indexForList] != 0) {
-                //print("         indexForStart = ${indexForStart(commands, indexForCommands)} ")
+                print("         indexForStart = ${indexForStart(commands, indexForCommands)} ")
                 indexForCommands = indexForStart(commands, indexForCommands)
             }
         }
+        if (indexForList !in 0 until cells) throw IllegalStateException()
         //} catch (e: IndexOutOfBoundsException) {
         //   throw IllegalStateException()
         //}
