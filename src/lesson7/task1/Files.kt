@@ -441,7 +441,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     if (lhv * rhv == 0) l = sumNum(Math.max(lhv, rhv))
     file.format(" %${l}d\n", lhv)
     file.format("*%${l}d\n", rhv)
-    repeat(l) { file.print('-') }
+    repeat(l + 1) { file.print('-') }
     file.println()
     val numbers = mutableListOf<Int>()
     var right = rhv
@@ -453,7 +453,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     for (i in 1 until numbers.size)
         file.format("+%${l - i}d\n", lhv * numbers[i])
     if (rhv != 0) {
-        repeat(l) { file.print('-') }
+        repeat(l + 1) { file.print('-') }
         file.println()
         file.format(" %${l}d", lhv * rhv)
     }

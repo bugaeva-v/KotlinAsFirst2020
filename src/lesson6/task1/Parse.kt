@@ -101,11 +101,11 @@ fun sumOfDays(month: String, year: Int): Int {
 
 fun dateStrToDigit(str: String): String {
     val list = str.split(" ")
-    if (list[0] == "" || list.size < 3) return ""
+    if (!str.matches(Regex("""\d+ [а-я]+ \d+"""))) return ""
     val day = list[0].toInt()
     val month = map[list[1]]?.first
     val year = list[2].toInt()
-    if (month == null || day !in 1..sumOfDays(list[1], year)) return ""
+    if (day !in 1..sumOfDays(list[1], year)) return ""
     return String.format("%02d.%02d.%d", day, month, year)
 }
 
