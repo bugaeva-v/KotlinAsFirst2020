@@ -2,6 +2,8 @@
 
 package lesson6.task1
 
+import java.lang.IndexOutOfBoundsException
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -74,7 +76,44 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+val map = mapOf(
+    "января" to Pair("01", 31),
+    "февраля" to Pair("02", 31),
+    "марта" to Pair("03", 29),
+    "апреля" to Pair("04", 30),
+    "мая" to Pair("05", 31),
+    "июня" to Pair("06", 30),
+    "июля" to Pair("07", 31),
+    "августа" to Pair("08", 30),
+    "сентября" to Pair("09", 30),
+    "октября" to Pair("10", 31),
+    "ноября" to Pair("11", 30),
+    "декабря" to Pair("12", 31)
+)
+
+fun sumOfDays(month: String, year: Int): Int {
+    if (month == "февраля") {
+        return if (year % 400 == 0 || year % 100 != 0 && year % 4 == 0) 29
+        else 28
+    }
+    if (map[month] == null)
+        return 0
+    return (map[month] ?: error("")).second
+}
+
+fun dateStrToDigit(str: String): String {
+    val list = str.split(" ")
+    return try {
+        val day = list[0].toInt()
+        val month = map[list[1]]?.first
+        val year = list[2].toInt()
+        if (month == null || day !in 1..sumOfDays(list[1], year))
+            ""
+        else String.format("%02d.%s.%02d", day, month, year)
+    } catch (e: IndexOutOfBoundsException) {
+        ""
+    }
+}
 
 /**
  * Средняя (4 балла)
@@ -138,7 +177,31 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    /* var list = try {
+        expression.split(" ")
+    } catch (e: IllegalArgumentException) {
+        throw e
+    }
+    var lastCh = try {
+        list[0]
+    } catch (e: IndexOutOfBoundsException) {
+        return 0
+    } */
+    if (!expression.matches(Regex("""(\d+ [+-](?= \d+) )*\d+$"""))) throw IllegalArgumentException()
+    var list = expression.split(" ")
+    var lastCh = "+"
+    var sum = 0
+    for ((index, str) in list.withIndex()) {
+        if (index % 2 == 0) sum += if (lastCh == "+") {
+            str.toInt()
+        } else {
+            -str.toInt()
+        }
+        else lastCh = str
+    }
+    return sum
+}
 
 /**
  * Сложная (6 баллов)
@@ -149,7 +212,18 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val list = str.toLowerCase().split(" ")
+    var index = -1
+    for (i in 0..list.size - 2) {
+        if (list[i] == list[i + 1]) {
+
+            return index + 1
+        }
+        index += list[i].length + 1
+    }
+    return -1
+}
 
 /**
  * Сложная (6 баллов)
@@ -213,4 +287,91 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+
+fun indexForStart(
+    commands: String,
+    indexForCommands: Int
+): Int {
+    var i = indexForCommands - 1
+    var numberOfAttachments = 0
+    while (i >= 0) {
+        //println("       start $i ${commands[i]} $numberOfAttachments")
+        if (commands[i] == ']') numberOfAttachments++
+        else if (commands[i] == '[') {
+            if (numberOfAttachments == 0) {
+                return i
+            } else numberOfAttachments--
+        }
+        i--
+    }
+    return commands.length / 2
+}
+
+fun indexForEnd(
+    commands: String,
+    indexForCommands: Int
+): Int {
+    var i = indexForCommands + 1
+    var numberOfAttachments = 0
+    while (i < commands.length) {
+        if (commands[i] == '[') numberOfAttachments++
+        else if (commands[i] == ']') {
+            if (numberOfAttachments == 0) {
+                return i
+            } else numberOfAttachments--
+        }
+        i++
+    }
+    println("end $i")
+    return 0
+}
+
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (!commands.matches(Regex("""[\[\]+>\-< ]*"""))) throw IllegalArgumentException()
+    /*try {
+        commands[limit - 1]
+    } catch (e: IllegalStateException) {
+        if (!commands.contains(Regex("""([+>\-=< ]*(\[[+>\-=< ]+\])*)*"""))) throw e
+    }*/
+    var startCycles = 0
+    var endCycles = 0
+    for (i in commands)
+        when (i) {
+            '[' -> startCycles++
+            ']' -> endCycles++
+        }
+    if (startCycles != endCycles) throw IllegalArgumentException()
+    var list = List(cells) { 0 }.toMutableList()
+    var indexForList = cells / 2
+    var indexForCommands = 0
+    var sumOfCommands = 0
+    while (indexForCommands < commands.length && sumOfCommands < limit) {
+        //println("$indexForList  $indexForCommands")
+        if (indexForList >= list.size) {
+            //print("!!!!!!!!!!!!!${list.size}!!!!!!!!!!!!!")
+            throw IllegalStateException()
+        }
+        //try {
+        when (commands[indexForCommands]) {
+            '>' -> indexForList++
+            '<' -> indexForList--
+            '+' -> list[indexForList]++
+            '-' -> list[indexForList]--
+            '[' -> if (list[indexForList] == 0) {
+                //print("         indexForEnd = ${indexForEnd(commands, indexForCommands)} ")
+                indexForCommands = indexForEnd(commands, indexForCommands)
+            }
+            ']' -> if (list[indexForList] != 0) {
+                //print("         indexForStart = ${indexForStart(commands, indexForCommands)} ")
+                indexForCommands = indexForStart(commands, indexForCommands)
+            }
+        }
+        //} catch (e: IndexOutOfBoundsException) {
+        //   throw IllegalStateException()
+        //}
+        indexForCommands++
+        sumOfCommands++
+    }
+    println()
+    return list
+}
