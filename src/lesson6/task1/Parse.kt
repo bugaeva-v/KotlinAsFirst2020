@@ -107,7 +107,7 @@ fun dateStrToDigit(str: String): String {
         val day = list[0].toInt()
         val month = map[list[1]]?.first
         val year = list[2].toInt()
-        if (month == null || day !in 1..sumOfDays(list[1], year))
+        if (month == null || year == null || day == null || day !in 1..sumOfDays(list[1], year))
             ""
         else String.format("%02d.%s.%d", day, month, year)
     } catch (e: IndexOutOfBoundsException) {
