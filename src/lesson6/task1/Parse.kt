@@ -2,8 +2,6 @@
 
 package lesson6.task1
 
-import java.lang.IndexOutOfBoundsException
-
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -77,18 +75,18 @@ fun main() {
  * входными данными.
  */
 val map = mapOf(
-    "января" to Pair("01", 31),
-    "февраля" to Pair("02", 29),
-    "марта" to Pair("03", 31),
-    "апреля" to Pair("04", 30),
-    "мая" to Pair("05", 31),
-    "июня" to Pair("06", 30),
-    "июля" to Pair("07", 31),
-    "августа" to Pair("08", 31),
-    "сентября" to Pair("09", 30),
-    "октября" to Pair("10", 31),
-    "ноября" to Pair("11", 30),
-    "декабря" to Pair("12", 31)
+    "января" to Pair(1, 31),
+    "февраля" to Pair(2, 29),
+    "марта" to Pair(3, 31),
+    "апреля" to Pair(4, 30),
+    "мая" to Pair(5, 31),
+    "июня" to Pair(6, 30),
+    "июля" to Pair(7, 31),
+    "августа" to Pair(8, 31),
+    "сентября" to Pair(9, 30),
+    "октября" to Pair(10, 31),
+    "ноября" to Pair(11, 30),
+    "декабря" to Pair(12, 31)
 )
 
 fun sumOfDays(month: String, year: Int): Int {
@@ -102,18 +100,13 @@ fun sumOfDays(month: String, year: Int): Int {
 }
 
 fun dateStrToDigit(str: String): String {
-    if (str == "") return ""
     val list = str.split(" ")
-    return try {
-        val day = list[0].toInt()
-        val month = map[list[1]]?.first
-        val year = list[2].toInt()
-        if (month == null || day !in 1..sumOfDays(list[1], year))
-            ""
-        else String.format("%02d.%s.%d", day, month, year)
-    } catch (e: IndexOutOfBoundsException) {
-        ""
-    }
+    if (list[0] == "" || list.size < 3) return ""
+    val day = list[0].toInt()
+    val month = map[list[1]]?.first
+    val year = list[2].toInt()
+    if (month == null || day !in 1..sumOfDays(list[1], year)) return ""
+    return String.format("%02d.%02d.%d", day, month, year)
 }
 
 /**
@@ -179,7 +172,7 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (!expression.matches(Regex("""(\d+ [+-](?= \d+) )*\d+$"""))) throw IllegalArgumentException()
+    if (!expression.matches(Regex("""(\d+ [+-] )*\d+$"""))) throw IllegalArgumentException()
     val list = expression.split(" ")
     var lastCh = "+"
     var sum = 0
@@ -319,48 +312,31 @@ fun indexForEnd(
 
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (!commands.matches(Regex("""[\[\]+>\-< ]*"""))) throw IllegalArgumentException()
-    var startCycles = 0
-    var endCycles = 0
+    var inCycle = 0
     for (i in commands) {
         when (i) {
-            '[' -> startCycles++
-            ']' -> endCycles++
+            '[' -> inCycle++
+            ']' -> inCycle--
         }
-        if (endCycles > startCycles) throw IllegalArgumentException()
+        if (inCycle < 0) throw IllegalArgumentException()
     }
-    if (startCycles != endCycles) throw IllegalArgumentException()
-    val list = List(cells) { 0 }.toMutableList()
+    if (inCycle != 0) throw IllegalArgumentException()
+    val list = MutableList(cells) { 0 }
     var indexForList = cells / 2
     var indexForCommands = 0
     var sumOfCommands = 0
     while (indexForCommands < commands.length && sumOfCommands < limit) {
-        println("$indexForList  $indexForCommands")
-        if (indexForList >= list.size) {
-            print("!!!!!!!!!!!!!${list.size}!!!!!!!!!!!!!")
-            throw IllegalStateException()
-        }
-        //try {
         when (commands[indexForCommands]) {
             '>' -> indexForList++
             '<' -> indexForList--
             '+' -> list[indexForList]++
             '-' -> list[indexForList]--
-            '[' -> if (list[indexForList] == 0) {
-                print("         indexForEnd = ${indexForEnd(commands, indexForCommands)} ")
-                indexForCommands = indexForEnd(commands, indexForCommands)
-            }
-            ']' -> if (list[indexForList] != 0) {
-                print("         indexForStart = ${indexForStart(commands, indexForCommands)} ")
-                indexForCommands = indexForStart(commands, indexForCommands)
-            }
+            '[' -> if (list[indexForList] == 0) indexForCommands = indexForEnd(commands, indexForCommands)
+            ']' -> if (list[indexForList] != 0) indexForCommands = indexForStart(commands, indexForCommands)
         }
         if (indexForList !in 0 until cells) throw IllegalStateException()
-        //} catch (e: IndexOutOfBoundsException) {
-        //   throw IllegalStateException()
-        //}
         indexForCommands++
         sumOfCommands++
     }
-    println()
     return list
 }
