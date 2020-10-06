@@ -200,10 +200,7 @@ fun firstDuplicateIndex(str: String): Int {
     val list = str.toLowerCase().split(" ")
     var index = -1
     for (i in 0..list.size - 2) {
-        if (list[i] == list[i + 1]) {
-
-            return index + 1
-        }
+        if (list[i] == list[i + 1]) return index + 1
         index += list[i].length + 1
     }
     return -1
@@ -279,7 +276,6 @@ fun indexForStart(
     var i = indexForCommands - 1
     var numberOfAttachments = 0
     while (i >= 0) {
-        //println("       start $i ${commands[i]} $numberOfAttachments")
         if (commands[i] == ']') numberOfAttachments++
         else if (commands[i] == '[') {
             if (numberOfAttachments == 0) {
@@ -306,7 +302,6 @@ fun indexForEnd(
         }
         i++
     }
-    println("end $i")
     return 0
 }
 
