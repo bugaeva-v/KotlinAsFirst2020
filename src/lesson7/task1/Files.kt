@@ -453,7 +453,6 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         file.format("+%${l - i}d\n", lhv * numbers[i])
     if (rhv != 0) {
         file.println("-".repeat(l + 1))
-        file.println()
         file.format(" %${l}d", lhv * rhv)
     }
     file.close()
