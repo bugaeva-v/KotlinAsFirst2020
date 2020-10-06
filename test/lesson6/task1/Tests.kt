@@ -42,6 +42,7 @@ class Tests {
         assertEquals("", dateStrToDigit("32 сентября 2011"))
         assertEquals("", dateStrToDigit("29 февраля 1993"))
         assertEquals("01.01.1", dateStrToDigit("01 января 1"))
+        assertEquals("30.03.1", dateStrToDigit("30 марта 1"))
     }
 
     @Test
@@ -152,5 +153,6 @@ class Tests {
         assertThrows(IllegalStateException::class.java) { computeDeviceCells(20, ">>>>>>>>>>>>>", 12) }
 
         assertThrows(IllegalStateException::class.java) { computeDeviceCells(1, "<", 500) }
+        assertThrows(IllegalArgumentException::class.java) { computeDeviceCells(1, "]+++++++++[++++++++[+++++++++++++++++++-+++++++]+-+<-++-+++-+<-+", 1587) }
     }
 }

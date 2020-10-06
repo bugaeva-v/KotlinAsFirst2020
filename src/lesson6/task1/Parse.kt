@@ -78,13 +78,13 @@ fun main() {
  */
 val map = mapOf(
     "января" to Pair("01", 31),
-    "февраля" to Pair("02", 31),
-    "марта" to Pair("03", 29),
+    "февраля" to Pair("02", 29),
+    "марта" to Pair("03", 31),
     "апреля" to Pair("04", 30),
     "мая" to Pair("05", 31),
     "июня" to Pair("06", 30),
     "июля" to Pair("07", 31),
-    "августа" to Pair("08", 30),
+    "августа" to Pair("08", 31),
     "сентября" to Pair("09", 30),
     "октября" to Pair("10", 31),
     "ноября" to Pair("11", 30),
@@ -179,7 +179,7 @@ fun bestHighJump(jumps: String): Int = TODO()
  */
 fun plusMinus(expression: String): Int {
     if (!expression.matches(Regex("""(\d+ [+-](?= \d+) )*\d+$"""))) throw IllegalArgumentException()
-    var list = expression.split(" ")
+    val list = expression.split(" ")
     var lastCh = "+"
     var sum = 0
     for ((index, str) in list.withIndex()) {
@@ -320,13 +320,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (!commands.matches(Regex("""[\[\]+>\-< ]*"""))) throw IllegalArgumentException()
     var startCycles = 0
     var endCycles = 0
-    for (i in commands)
+    for (i in commands) {
         when (i) {
             '[' -> startCycles++
             ']' -> endCycles++
         }
+        if (endCycles > startCycles) throw IllegalArgumentException()
+    }
     if (startCycles != endCycles) throw IllegalArgumentException()
-    var list = List(cells) { 0 }.toMutableList()
+    val list = List(cells) { 0 }.toMutableList()
     var indexForList = cells / 2
     var indexForCommands = 0
     var sumOfCommands = 0
