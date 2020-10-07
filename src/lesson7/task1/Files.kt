@@ -4,6 +4,8 @@ package lesson7.task1
 
 import java.io.File
 import java.lang.Math.max
+import lesson3.task1.digitNumber
+import kotlin.math.pow
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -425,27 +427,16 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 
-fun sumNum(num: Int): Int {
-    if (num == 0) return 1
-    var sum = 0
-    var n = num
-    while (n > 0) {
-        sum++
-        n /= 10
-    }
-    return sum
-}
-
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {//эта функция уже принята в предыдущем сабмишене
     val file = File(outputName).printWriter()
-    var l = sumNum(lhv * rhv)
-    if (lhv * rhv == 0) l = sumNum(Math.max(lhv, rhv))
+    var l = digitNumber(lhv * rhv)
+    if (lhv * rhv == 0) l = digitNumber(Math.max(lhv, rhv))
     file.format(" %${l}d\n", lhv)
     file.format("*%${l}d\n", rhv)
     file.println("-".repeat(l + 1))
     val numbers = mutableListOf<Int>()
     var right = rhv
-    for (i in 0 until sumNum(rhv)) {
+    for (i in 0 until digitNumber(rhv)) {
         numbers.add(right % 10)
         right /= 10
     }
@@ -484,34 +475,35 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val file = File(outputName).printWriter()
     var left = lhv
     val numbers = mutableListOf<Int>()
-    repeat(sumNum(lhv)) {
+    repeat(digitNumber(lhv)) {
         numbers.add(left % 10)
         left /= 10
     }
     var j = 0
-    var emptySpace: Int
+    var emptySpace = j
     var remainder = 0
-    emptySpace = j
     var x = remainder
-    while (x < rhv && j < numbers.size) {
+    while (x < rhv && j < numbers.size) {//
         x = x * 10 + numbers[numbers.size - j - 1]
         j++
     }
-    if (sumNum(rhv * (x / rhv)) == sumNum(x)) emptySpace++
+    //x = lhv / 10.0.pow(max(digitNumber(lhv) - digitNumber(rhv), 0)).toInt()
+    if (digitNumber(rhv * (x / rhv)) == digitNumber(x)) emptySpace++
     file.println(" ".repeat(emptySpace) + String.format("%d | %d", lhv, rhv))
     emptySpace--
     if (rhv > lhv) {
-        file.println(" ".repeat(sumNum(lhv) - if (lhv<10) 1 else 2) + "-0   0")
-        file.println("-".repeat(sumNum(lhv) + if (lhv<10) 1 else 0))
+        file.println(" ".repeat(digitNumber(lhv) - if (lhv < 10) 1 else 2) + "-0   0")
+        file.println("-".repeat(digitNumber(lhv) + if (lhv < 10) 1 else 0))
+    } else if (digitNumber(rhv) + 1 == digitNumber(lhv)) {
+        file.println("-${rhv * (x / rhv)}   " + " ".repeat(digitNumber(lhv) - digitNumber(rhv * (x / rhv)) - if (j == numbers.size) 1 else 0) + "${lhv / rhv}")
+        file.println("-".repeat(digitNumber(rhv * (x / rhv)) + 1))
     } else {
-        file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}   " + " ".repeat(sumNum(lhv) - sumNum(rhv * (x / rhv))) + "${lhv / rhv}")
-        file.println("-".repeat(sumNum(rhv * (x / rhv)) + 1))
+        file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}   " + " ".repeat(digitNumber(lhv) - digitNumber(rhv * (x / rhv))) + "${lhv / rhv}")
+        file.println("-".repeat(digitNumber(rhv * (x / rhv)) + 1))
     }
     remainder = x % rhv
-    file.print(" ".repeat(emptySpace + 1) + " ".repeat(sumNum(x) - sumNum(remainder)) + "$remainder")
-    fun nextResult(j0: Int) {
-        if (j0 >= numbers.size) return
-        emptySpace = j
+    file.print(" ".repeat(emptySpace + 1) + " ".repeat(digitNumber(x) - digitNumber(remainder)) + "$remainder")
+    while (j < numbers.size) {
         file.print(numbers[numbers.size - j - 1])
         x = remainder * 10 + numbers[numbers.size - j - 1]
         j++
@@ -521,18 +513,15 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             j++
         }*/
         file.println()
-        emptySpace = j - sumNum(rhv * (x / rhv))
+        emptySpace = j - digitNumber(rhv * (x / rhv))
         file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}")
-        if (sumNum(x) > sumNum(rhv * (x / rhv))) emptySpace+= -sumNum(x)+ sumNum(rhv * (x / rhv))+1
-        file.println(" ".repeat(emptySpace) + "-".repeat(max(sumNum(rhv * (x / rhv)) + 1, sumNum(x))))
+        if (digitNumber(x) > digitNumber(rhv * (x / rhv))) emptySpace += -digitNumber(x) + digitNumber(rhv * (x / rhv)) + 1
+        file.println(" ".repeat(emptySpace) + "-".repeat(max(digitNumber(rhv * (x / rhv)) + 1, digitNumber(x))))
         remainder = x % rhv
-        emptySpace += sumNum(x) - sumNum(remainder)
-        if (sumNum(x) == sumNum(rhv * (x / rhv))) emptySpace++
+        emptySpace += digitNumber(x) - digitNumber(remainder)
+        if (digitNumber(x) == digitNumber(rhv * (x / rhv))) emptySpace++
         file.print(" ".repeat(emptySpace) + "$remainder")
-        nextResult(j)
-        return
     }
-    nextResult(j)
     file.close()
 }
 
