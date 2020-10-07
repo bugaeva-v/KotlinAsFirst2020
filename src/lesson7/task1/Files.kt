@@ -507,7 +507,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         if (j0 >= numbers.size) return
         emptySpace = j
         file.print(numbers[numbers.size - j - 1])
-        val x = ost * 10 + numbers[numbers.size - j - 1]
+        x = ost * 10 + numbers[numbers.size - j - 1]
         j++
         /*while (x < rhv && j < numbers.size) {
             file.print(numbers[numbers.size - j - 1])
