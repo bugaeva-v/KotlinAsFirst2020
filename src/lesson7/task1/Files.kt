@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.lang.Math.max
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -522,7 +523,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         file.println()
         emptySpace = j - sumNum(rhv * (x / rhv))
         file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}")
-        file.println(" ".repeat(emptySpace) + "-".repeat(sumNum(rhv * (x / rhv)) + 1))
+        if (sumNum(x) > sumNum(rhv * (x / rhv))) emptySpace+= -sumNum(x)+ sumNum(rhv * (x / rhv))+1
+        file.println(" ".repeat(emptySpace) + "-".repeat(max(sumNum(rhv * (x / rhv)) + 1, sumNum(x))))
         remainder = x % rhv
         emptySpace += sumNum(x) - sumNum(remainder)
         if (sumNum(x) == sumNum(rhv * (x / rhv))) emptySpace++
