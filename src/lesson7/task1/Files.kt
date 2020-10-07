@@ -435,7 +435,7 @@ fun sumNum(num: Int): Int {
     return sum
 }
 
-fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
+fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {//эта функция уже принята в предыдущем сабмишене
     val file = File(outputName).printWriter()
     var l = sumNum(lhv * rhv)
     if (lhv * rhv == 0) l = sumNum(Math.max(lhv, rhv))
