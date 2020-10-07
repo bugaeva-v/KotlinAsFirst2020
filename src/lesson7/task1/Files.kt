@@ -480,6 +480,52 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val file = File(outputName).printWriter()
+    var left = lhv
+    val numbers = mutableListOf<Int>()
+    repeat(sumNum(lhv)) {
+        numbers.add(left % 10)
+        left /= 10
+    }
+    var j = 0
+    var emptySpace: Int
+    var ost = 0
+    emptySpace = j
+    var x = ost
+    while (x < rhv && j < numbers.size) {
+        x = x * 10 + numbers[numbers.size - j - 1]
+        j++
+    }
+    if (sumNum(rhv * (x / rhv)) == sumNum(x)) emptySpace++
+    file.println(" ".repeat(emptySpace) + String.format("%d | %d", lhv, rhv))
+    emptySpace--
+    file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}   " + " ".repeat(sumNum(lhv) - sumNum(rhv * (x / rhv))) + "${lhv / rhv}")
+    file.println(" ".repeat(emptySpace) + "-".repeat(sumNum(rhv * (x / rhv)) + 1))
+    ost = x % rhv
+    file.print(" ".repeat(emptySpace + 1) + " ".repeat(sumNum(x) - sumNum(ost)) + "$ost")
+    fun nextResult(j0: Int) {
+        if (j0 >= numbers.size) return
+        emptySpace = j
+        file.print(numbers[numbers.size - j - 1])
+        val x = ost * 10 + numbers[numbers.size - j - 1]
+        j++
+        /*while (x < rhv && j < numbers.size) {
+            file.print(numbers[numbers.size - j - 1])
+            x = x * 10 + numbers[numbers.size - j - 1]
+            j++
+        }*/
+        file.println()
+        emptySpace = j - sumNum(rhv * (x / rhv))
+        file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}")
+        file.println(" ".repeat(emptySpace) + "-".repeat(sumNum(rhv * (x / rhv)) + 1))
+        ost = x % rhv
+        emptySpace += sumNum(x) - sumNum(ost)
+        if (sumNum(x) == sumNum(rhv * (x / rhv))) emptySpace++
+        file.print(" ".repeat(emptySpace) + "$ost")
+        nextResult(j)
+        return
+    }
+    nextResult(j)
+    file.close()
 }
 
