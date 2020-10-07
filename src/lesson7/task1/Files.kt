@@ -489,9 +489,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     }
     var j = 0
     var emptySpace: Int
-    var ost = 0
+    var remainder = 0
     emptySpace = j
-    var x = ost
+    var x = remainder
     while (x < rhv && j < numbers.size) {
         x = x * 10 + numbers[numbers.size - j - 1]
         j++
@@ -499,15 +499,20 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     if (sumNum(rhv * (x / rhv)) == sumNum(x)) emptySpace++
     file.println(" ".repeat(emptySpace) + String.format("%d | %d", lhv, rhv))
     emptySpace--
-    file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}   " + " ".repeat(sumNum(lhv) - sumNum(rhv * (x / rhv))) + "${lhv / rhv}")
-    file.println(" ".repeat(emptySpace) + "-".repeat(sumNum(rhv * (x / rhv)) + 1))
-    ost = x % rhv
-    file.print(" ".repeat(emptySpace + 1) + " ".repeat(sumNum(x) - sumNum(ost)) + "$ost")
+    if (rhv > lhv) {
+        file.println(" ".repeat(sumNum(lhv) - if (lhv<10) 1 else 2) + "-0   0")
+        file.println("-".repeat(sumNum(lhv) + if (lhv<10) 1 else 0))
+    } else {
+        file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}   " + " ".repeat(sumNum(lhv) - sumNum(rhv * (x / rhv))) + "${lhv / rhv}")
+        file.println("-".repeat(sumNum(rhv * (x / rhv)) + 1))
+    }
+    remainder = x % rhv
+    file.print(" ".repeat(emptySpace + 1) + " ".repeat(sumNum(x) - sumNum(remainder)) + "$remainder")
     fun nextResult(j0: Int) {
         if (j0 >= numbers.size) return
         emptySpace = j
         file.print(numbers[numbers.size - j - 1])
-        x = ost * 10 + numbers[numbers.size - j - 1]
+        x = remainder * 10 + numbers[numbers.size - j - 1]
         j++
         /*while (x < rhv && j < numbers.size) {
             file.print(numbers[numbers.size - j - 1])
@@ -518,10 +523,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         emptySpace = j - sumNum(rhv * (x / rhv))
         file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}")
         file.println(" ".repeat(emptySpace) + "-".repeat(sumNum(rhv * (x / rhv)) + 1))
-        ost = x % rhv
-        emptySpace += sumNum(x) - sumNum(ost)
+        remainder = x % rhv
+        emptySpace += sumNum(x) - sumNum(remainder)
         if (sumNum(x) == sumNum(rhv * (x / rhv))) emptySpace++
-        file.print(" ".repeat(emptySpace) + "$ost")
+        file.print(" ".repeat(emptySpace) + "$remainder")
         nextResult(j)
         return
     }

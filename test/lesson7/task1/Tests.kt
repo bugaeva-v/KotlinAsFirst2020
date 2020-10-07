@@ -443,6 +443,11 @@ Basic, Ruby, Swift.
                   0
              """
         )
+        test(
+            56606,
+            93863,
+            "56606 | 93863\n   -0   0\n-----\n56606"
+        )
 
         File("temp.txt").delete()
     }
