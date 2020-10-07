@@ -494,7 +494,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     if (rhv > lhv) {
         file.println(" ".repeat(digitNumber(lhv) - if (lhv < 10) 1 else 2) + "-0   0")
         file.println("-".repeat(digitNumber(lhv) + if (lhv < 10) 1 else 0))
-    } else if (digitNumber(rhv) + 1 == digitNumber(lhv)) {
+    } else if (digitNumber(rhv * (x / rhv)) + 1 == digitNumber(lhv)) {
         file.println("-${rhv * (x / rhv)}   " + " ".repeat(digitNumber(lhv) - digitNumber(rhv * (x / rhv)) - if (j == numbers.size) 1 else 0) + "${lhv / rhv}")
         file.println("-".repeat(digitNumber(rhv * (x / rhv)) + 1))
     } else {
