@@ -5,7 +5,6 @@ package lesson7.task1
 import java.io.File
 import java.lang.Math.max
 import lesson3.task1.digitNumber
-import kotlin.math.pow
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -66,7 +65,13 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    TODO()
+    var input = File(inputName).bufferedReader()
+    var output = File(outputName).bufferedWriter()
+    for (str in input.readLines())
+        if (str.isEmpty() || str[0] != '_')
+            output.write(str + "\n")
+    input.close()
+    output.close()
 }
 
 /**
@@ -78,7 +83,25 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val input = File(inputName).bufferedReader().readLines()
+    val list = mutableListOf<String>()
+    for (strInFile in input){
+        list.addAll(strInFile.toLowerCase().split(" "))
+    }
+    val map = mutableMapOf<String, Int>()
+    for (strInList in substrings)
+        for (strInFile in list){
+            println("       $strInFile     $strInList")
+            if (strInFile == strInList) {
+                if (map.containsKey(strInList)){
+                    map[strInList] = map[strInList]!! + 1
+                }
+                else map[strInList] = 1
+            }
+        }
+    return map
+}
 
 
 /**
@@ -176,7 +199,6 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Средняя (14 баллов)
  *
  * Реализовать транслитерацию текста из входного файла в выходной файл посредством динамически задаваемых правил.
-
  * Во входном файле с именем inputName содержится некоторый текст (в том числе, и на русском языке).
  *
  * В ассоциативном массиве dictionary содержится словарь, в котором некоторым символам
@@ -229,7 +251,6 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Остроумный
  * БелогЛазый
  * ФиолетОвый
-
  * Соответствующий выходной файл:
  * Карминовый, Некрасивый
  *
@@ -266,20 +287,19 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
  * Пример входного файла:
 Lorem ipsum *dolor sit amet*, consectetur **adipiscing** elit.
 Vestibulum lobortis, ~~Est vehicula rutrum *suscipit*~~, ipsum ~~lib~~ero *placerat **tortor***,
-
 Suspendisse ~~et elit in enim tempus iaculis~~.
  *
  * Соответствующий выходной файл:
 <html>
-<body>
-<p>
-Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
-Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
-</p>
-<p>
-Suspendisse <s>et elit in enim tempus iaculis</s>.
-</p>
-</body>
+    <body>
+        <p>
+            Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
+            Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
+        </p>
+        <p>
+            Suspendisse <s>et elit in enim tempus iaculis</s>.
+        </p>
+    </body>
 </html>
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
@@ -322,65 +342,65 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  *
  * Пример входного файла:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
- * Утка по-пекински
- * Утка
- * Соус
- * Салат Оливье
-1. Мясо
- * Или колбаса
-2. Майонез
-3. Картофель
-4. Что-то там ещё
- * Помидоры
- * Фрукты
-1. Бананы
-23. Яблоки
-1. Красные
-2. Зелёные
+* Утка по-пекински
+    * Утка
+    * Соус
+* Салат Оливье
+    1. Мясо
+        * Или колбаса
+    2. Майонез
+    3. Картофель
+    4. Что-то там ещё
+* Помидоры
+* Фрукты
+    1. Бананы
+    23. Яблоки
+        1. Красные
+        2. Зелёные
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  *
  *
  * Соответствующий выходной файл:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
 <html>
-<body>
-<p>
-<ul>
-<li>
-Утка по-пекински
-<ul>
-<li>Утка</li>
-<li>Соус</li>
-</ul>
-</li>
-<li>
-Салат Оливье
-<ol>
-<li>Мясо
-<ul>
-<li>Или колбаса</li>
-</ul>
-</li>
-<li>Майонез</li>
-<li>Картофель</li>
-<li>Что-то там ещё</li>
-</ol>
-</li>
-<li>Помидоры</li>
-<li>Фрукты
-<ol>
-<li>Бананы</li>
-<li>Яблоки
-<ol>
-<li>Красные</li>
-<li>Зелёные</li>
-</ol>
-</li>
-</ol>
-</li>
-</ul>
-</p>
-</body>
+  <body>
+    <p>
+      <ul>
+        <li>
+          Утка по-пекински
+          <ul>
+            <li>Утка</li>
+            <li>Соус</li>
+          </ul>
+        </li>
+        <li>
+          Салат Оливье
+          <ol>
+            <li>Мясо
+              <ul>
+                <li>Или колбаса</li>
+              </ul>
+            </li>
+            <li>Майонез</li>
+            <li>Картофель</li>
+            <li>Что-то там ещё</li>
+          </ol>
+        </li>
+        <li>Помидоры</li>
+        <li>Фрукты
+          <ol>
+            <li>Бананы</li>
+            <li>Яблоки
+              <ol>
+                <li>Красные</li>
+                <li>Зелёные</li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+      </ul>
+    </p>
+  </body>
 </html>
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
@@ -475,51 +495,55 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val file = File(outputName).printWriter()
     var left = lhv
     val numbers = mutableListOf<Int>()
-    repeat(digitNumber(lhv)) {
+    val sumNumLhv = digitNumber(lhv)
+    repeat(sumNumLhv) {
         numbers.add(left % 10)
         left /= 10
     }
     var j = 0
     var emptySpace = j
-    var remainder = 0
-    var x = remainder
-    while (x < rhv && j < numbers.size) {//
-        x = x * 10 + numbers[numbers.size - j - 1]
+    var localDividend = 0
+    while (localDividend < rhv && j <= numbers.lastIndex) {
+        localDividend = localDividend * 10 + numbers[numbers.lastIndex - j]
         j++
     }
-    //x = lhv / 10.0.pow(max(digitNumber(lhv) - digitNumber(rhv), 0)).toInt()
-    if (digitNumber(rhv * (x / rhv)) == digitNumber(x)) emptySpace++
+    var sumNumLocalDividend = digitNumber(localDividend)
+    var localDividendWithoutRem = rhv * (localDividend / rhv)
+    var sumNumLDWR = digitNumber(localDividendWithoutRem)
+    if (sumNumLDWR == sumNumLocalDividend) emptySpace++
     file.println(" ".repeat(emptySpace) + String.format("%d | %d", lhv, rhv))
     emptySpace--
-    if (rhv > lhv) {
-        file.println(" ".repeat(digitNumber(lhv) - if (lhv < 10) 1 else 2) + "-0   0")
-        file.println("-".repeat(digitNumber(lhv) + if (lhv < 10) 1 else 0))
-    } else if (digitNumber(rhv * (x / rhv)) + 1 == digitNumber(lhv)) {
-        file.println("-${rhv * (x / rhv)}   " + " ".repeat(digitNumber(lhv) - digitNumber(rhv * (x / rhv)) - if (j == numbers.size) 1 else 0) + "${lhv / rhv}")
-        file.println("-".repeat(digitNumber(rhv * (x / rhv)) + 1))
-    } else {
-        file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}   " + " ".repeat(digitNumber(lhv) - digitNumber(rhv * (x / rhv))) + "${lhv / rhv}")
-        file.println("-".repeat(digitNumber(rhv * (x / rhv)) + 1))
+    when {
+        rhv > lhv -> {
+            file.println(" ".repeat(sumNumLhv - if (lhv < 10) 1 else 2) + "-0   0")
+            file.println("-".repeat(sumNumLhv + if (lhv < 10) 1 else 0))
+        }
+        sumNumLDWR + 1 == sumNumLhv -> {
+            file.println("-$localDividendWithoutRem   " + " ".repeat(sumNumLhv - sumNumLDWR - if (j == numbers.size) 1 else 0) + "${lhv / rhv}")
+            file.println("-".repeat(sumNumLDWR + 1))
+        }
+        else -> {
+            file.println(" ".repeat(emptySpace) + "-$localDividendWithoutRem   " + " ".repeat(sumNumLhv - sumNumLDWR) + "${lhv / rhv}")
+            file.println("-".repeat(sumNumLDWR + 1))
+        }
     }
-    remainder = x % rhv
-    file.print(" ".repeat(emptySpace + 1) + " ".repeat(digitNumber(x) - digitNumber(remainder)) + "$remainder")
-    while (j < numbers.size) {
-        file.print(numbers[numbers.size - j - 1])
-        x = remainder * 10 + numbers[numbers.size - j - 1]
+    var remainder = localDividend % rhv
+    file.print(" ".repeat(emptySpace + 1) + " ".repeat(sumNumLocalDividend - digitNumber(remainder)) + "$remainder")
+    while (j <= numbers.lastIndex) {
+        file.print(numbers[numbers.lastIndex - j])
+        localDividend = remainder * 10 + numbers[numbers.lastIndex - j]
+        sumNumLocalDividend = digitNumber(localDividend)
         j++
-        /*while (x < rhv && j < numbers.size) {
-            file.print(numbers[numbers.size - j - 1])
-            x = x * 10 + numbers[numbers.size - j - 1]
-            j++
-        }*/
         file.println()
-        emptySpace = j - digitNumber(rhv * (x / rhv))
-        file.println(" ".repeat(emptySpace) + "-${rhv * (x / rhv)}")
-        if (digitNumber(x) > digitNumber(rhv * (x / rhv))) emptySpace += -digitNumber(x) + digitNumber(rhv * (x / rhv)) + 1
-        file.println(" ".repeat(emptySpace) + "-".repeat(max(digitNumber(rhv * (x / rhv)) + 1, digitNumber(x))))
-        remainder = x % rhv
-        emptySpace += digitNumber(x) - digitNumber(remainder)
-        if (digitNumber(x) == digitNumber(rhv * (x / rhv))) emptySpace++
+        localDividendWithoutRem = rhv * (localDividend / rhv)
+        sumNumLDWR = digitNumber(localDividendWithoutRem)
+        emptySpace = j - sumNumLDWR
+        file.println(" ".repeat(emptySpace) + "-$localDividendWithoutRem")
+        if (sumNumLocalDividend > sumNumLDWR) emptySpace += sumNumLDWR - sumNumLocalDividend + 1
+        file.println(" ".repeat(emptySpace) + "-".repeat(max(sumNumLDWR + 1, sumNumLocalDividend)))
+        remainder = localDividend % rhv
+        emptySpace += sumNumLocalDividend - digitNumber(remainder)
+        if (sumNumLocalDividend == sumNumLDWR) emptySpace++
         file.print(" ".repeat(emptySpace) + "$remainder")
     }
     file.close()
