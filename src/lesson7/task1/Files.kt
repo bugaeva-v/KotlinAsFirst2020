@@ -65,13 +65,7 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    var input = File(inputName).bufferedReader()
-    var output = File(outputName).bufferedWriter()
-    for (str in input.readLines())
-        if (str.isEmpty() || str[0] != '_')
-            output.write(str + "\n")
-    input.close()
-    output.close()
+    TODO()
 }
 
 /**
@@ -83,25 +77,7 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    val input = File(inputName).bufferedReader().readLines()
-    val list = mutableListOf<String>()
-    for (strInFile in input){
-        list.addAll(strInFile.toLowerCase().split(" "))
-    }
-    val map = mutableMapOf<String, Int>()
-    for (strInList in substrings)
-        for (strInFile in list){
-            println("       $strInFile     $strInList")
-            if (strInFile == strInList) {
-                if (map.containsKey(strInList)){
-                    map[strInList] = map[strInList]!! + 1
-                }
-                else map[strInList] = 1
-            }
-        }
-    return map
-}
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
 
 
 /**
