@@ -476,55 +476,53 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         left /= 10
     }
     var j = 0
-    var emptySpace = j
-    var localDividend = 0
-    while (localDividend < rhv && j <= numbers.lastIndex) {
-        localDividend = localDividend * 10 + numbers[numbers.lastIndex - j]
+    var firstEmptySpace = j
+    var firstDividend = 0
+    while (firstDividend < rhv && j <= numbers.lastIndex) {
+        firstDividend = firstDividend * 10 + numbers[numbers.lastIndex - j]
         j++
     }
-    val sumNumLocalDividend = digitNumber(localDividend)
-    var localDividendWithoutRem = rhv * (localDividend / rhv)
-    var sumNumLDWR = digitNumber(localDividendWithoutRem)
-    if (sumNumLDWR == sumNumLocalDividend) emptySpace++
-    file.println(" ".repeat(emptySpace) + String.format("%d | %d", lhv, rhv))
-    emptySpace--
+    val sumNumFirstDividend = digitNumber(firstDividend)
+    val firstDividendWithoutRem = rhv * (firstDividend / rhv)
+    val sumNumFDWR = digitNumber(firstDividendWithoutRem)
+    if (sumNumFDWR == sumNumFirstDividend) firstEmptySpace++
+    file.println(" ".repeat(firstEmptySpace) + String.format("%d | %d", lhv, rhv))
+    firstEmptySpace--
     when {
         rhv > lhv -> {
             file.println(" ".repeat(sumNumLhv - if (lhv < 10) 1 else 2) + "-0   0")
             file.println("-".repeat(sumNumLhv + if (lhv < 10) 1 else 0))
         }
-        sumNumLDWR + 1 == sumNumLhv -> {
-            file.println(
-                "-$localDividendWithoutRem   " + " ".repeat(sumNumLhv - sumNumLDWR - if (j == numbers.size) 1 else 0)
-                        + "${lhv / rhv}"
-            )
-            file.println("-".repeat(sumNumLDWR + 1))
+        sumNumFDWR + 1 == sumNumLhv -> {
+            file.print("-$firstDividendWithoutRem   ")
+            file.print(" ".repeat(sumNumLhv - sumNumFDWR - if (j == numbers.size) 1 else 0))
+            file.println("${lhv / rhv}")
+            file.println("-".repeat(sumNumFDWR + 1))
         }
         else -> {
-            file.println(
-                " ".repeat(emptySpace) + "-$localDividendWithoutRem   " + " ".repeat(sumNumLhv - sumNumLDWR)
-                        + "${lhv / rhv}"
-            )
-            file.println("-".repeat(sumNumLDWR + 1))
+            file.print(" ".repeat(firstEmptySpace))
+            file.print("-$firstDividendWithoutRem   " + " ".repeat(sumNumLhv - sumNumFDWR))
+            file.println("${lhv / rhv}")
+            file.println("-".repeat(sumNumFDWR + 1))
         }
     }
-    var remainder = localDividend % rhv
-    file.print(" ".repeat(emptySpace + 1) + " ".repeat(sumNumLocalDividend - digitNumber(remainder)) + "$remainder")
-    for (j in j..numbers.lastIndex) {
-        file.print(numbers[numbers.lastIndex - j])
-        val localDividend = remainder * 10 + numbers[numbers.lastIndex - j]
+    var remainder = firstDividend % rhv
+    file.print(" ".repeat(firstEmptySpace + 1) + " ".repeat(sumNumFirstDividend - digitNumber(remainder)) + "$remainder")
+    for (i in j..numbers.lastIndex) {
+        file.print(numbers[numbers.lastIndex - i])
+        val localDividend = remainder * 10 + numbers[numbers.lastIndex - i]
         val sumNumLocalDividend = digitNumber(localDividend)
         file.println()
-        localDividendWithoutRem = rhv * (localDividend / rhv)
-        sumNumLDWR = digitNumber(localDividendWithoutRem)
-        emptySpace = j - sumNumLDWR + 1
-        file.println(" ".repeat(emptySpace) + "-$localDividendWithoutRem")
-        if (sumNumLocalDividend > sumNumLDWR) emptySpace += sumNumLDWR - sumNumLocalDividend + 1
-        file.println(" ".repeat(emptySpace) + "-".repeat(max(sumNumLDWR + 1, sumNumLocalDividend)))
+        val localDividendWithoutRem = rhv * (localDividend / rhv)
+        val sumNumLDWR = digitNumber(localDividendWithoutRem)
+        var localEmptySpace = i - sumNumLDWR + 1
+        file.println(" ".repeat(localEmptySpace) + "-$localDividendWithoutRem")
+        if (sumNumLocalDividend > sumNumLDWR) localEmptySpace += sumNumLDWR - sumNumLocalDividend + 1
+        file.println(" ".repeat(localEmptySpace) + "-".repeat(max(sumNumLDWR + 1, sumNumLocalDividend)))
         remainder = localDividend % rhv
-        emptySpace += sumNumLocalDividend - digitNumber(remainder)
-        if (sumNumLocalDividend == sumNumLDWR) emptySpace++
-        file.print(" ".repeat(emptySpace) + "$remainder")
+        localEmptySpace += sumNumLocalDividend - digitNumber(remainder)
+        if (sumNumLocalDividend == sumNumLDWR) localEmptySpace++
+        file.print(" ".repeat(localEmptySpace) + "$remainder")
     }
     file.close()
 }
