@@ -88,7 +88,7 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val input = File(inputName).bufferedReader().readLines()
     val map = mutableMapOf<String, Int>()
     for (i in substrings) map[i] = 0
-    for (strInList in substrings)
+    for (strInList in substrings.toSet())
         for (strInFile in input) {
             val s = strInList.toLowerCase()
             val str = strInFile.toLowerCase()
