@@ -5,6 +5,7 @@ package lesson7.task1
 import java.io.File
 import java.lang.Math.max
 import lesson3.task1.digitNumber
+import java.util.*
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -65,7 +66,13 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    TODO()
+    val input = File(inputName).bufferedReader()
+    val output = File(outputName).bufferedWriter()
+    for (str in input.readLines())
+        if (str.isEmpty() || str[0] != '_')
+            output.write(str + "\n")
+    input.close()
+    output.close()
 }
 
 /**
@@ -77,7 +84,29 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val input = File(inputName).bufferedReader().readLines()
+    val map = mutableMapOf<String, Int>()
+    for (i in substrings) map[i] = 0
+    for (strInList in substrings)
+        for (strInFile in input) {
+            val s = strInList.toLowerCase()
+            val str = strInFile.toLowerCase()
+            var index = 0
+            if (!str.contains(s)) continue
+            while (index != strInFile.length) {
+                val f = Regex(s).find(str, index)
+                if (s.length == 1 && str[index] == s[0]) {
+                    map[strInList] = map.getOrPut(strInList) { 1 } + 1
+                } else if (s.length != 1 && f != null) {
+                    index = f.range.toList().first()
+                    map[strInList] = map.getOrPut(strInList) { 1 } + 1
+                }
+                index++
+            }
+        }
+    return map
+}
 
 
 /**
@@ -139,7 +168,7 @@ fun centerFile(inputName: String, outputName: String) {
  * 6) Число пробелов между более левой парой соседних слов должно быть больше или равно числу пробелов
  *    между более правой парой соседних слов.
  *
- * Следует учесть, что входной файл может содержать последовательности из нескольких пробелов  между слвоами. Такие
+ * Следует учесть, что входной файл может содержать последовательности из нескольких пробелов  между словами. Такие
  * последовательности следует учитывать при выравнивании и при необходимости избавляться от лишних пробелов.
  * Из этого следуют следующие правила:
  * 7) В самой длинной строке каждая пара соседних слов должна быть отделена В ТОЧНОСТИ одним пробелом
@@ -263,19 +292,20 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
  * Пример входного файла:
 Lorem ipsum *dolor sit amet*, consectetur **adipiscing** elit.
 Vestibulum lobortis, ~~Est vehicula rutrum *suscipit*~~, ipsum ~~lib~~ero *placerat **tortor***,
+
 Suspendisse ~~et elit in enim tempus iaculis~~.
  *
  * Соответствующий выходной файл:
 <html>
-    <body>
-        <p>
-            Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
-            Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
-        </p>
-        <p>
-            Suspendisse <s>et elit in enim tempus iaculis</s>.
-        </p>
-    </body>
+<body>
+<p>
+Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
+Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
+</p>
+<p>
+Suspendisse <s>et elit in enim tempus iaculis</s>.
+</p>
+</body>
 </html>
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
@@ -318,71 +348,107 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  *
  * Пример входного файла:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
-* Утка по-пекински
-    * Утка
-    * Соус
-* Салат Оливье
-    1. Мясо
-        * Или колбаса
-    2. Майонез
-    3. Картофель
-    4. Что-то там ещё
-* Помидоры
-* Фрукты
-    1. Бананы
-    23. Яблоки
-        1. Красные
-        2. Зелёные
+ * Утка по-пекински
+ * Утка
+ * Соус
+ * Салат Оливье
+1. Мясо
+ * Или колбаса
+2. Майонез
+3. Картофель
+4. Что-то там ещё
+ * Помидоры
+ * Фрукты
+1. Бананы
+23. Яблоки
+1. Красные
+2. Зелёные
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  *
  *
  * Соответствующий выходной файл:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
 <html>
-  <body>
-    <p>
-      <ul>
-        <li>
-          Утка по-пекински
-          <ul>
-            <li>Утка</li>
-            <li>Соус</li>
-          </ul>
-        </li>
-        <li>
-          Салат Оливье
-          <ol>
-            <li>Мясо
-              <ul>
-                <li>Или колбаса</li>
-              </ul>
-            </li>
-            <li>Майонез</li>
-            <li>Картофель</li>
-            <li>Что-то там ещё</li>
-          </ol>
-        </li>
-        <li>Помидоры</li>
-        <li>Фрукты
-          <ol>
-            <li>Бананы</li>
-            <li>Яблоки
-              <ol>
-                <li>Красные</li>
-                <li>Зелёные</li>
-              </ol>
-            </li>
-          </ol>
-        </li>
-      </ul>
-    </p>
-  </body>
+<body>
+<p>
+<ul>
+<li>
+Утка по-пекински
+<ul>
+<li>Утка</li>
+<li>Соус</li>
+</ul>
+</li>
+<li>
+Салат Оливье
+<ol>
+<li>Мясо
+<ul>
+<li>Или колбаса</li>
+</ul>
+</li>
+<li>Майонез</li>
+<li>Картофель</li>
+<li>Что-то там ещё</li>
+</ol>
+</li>
+<li>Помидоры</li>
+<li>Фрукты
+<ol>
+<li>Бананы</li>
+<li>Яблоки
+<ol>
+<li>Красные</li>
+<li>Зелёные</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+</p>
+</body>
 </html>
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    val input = File(inputName).bufferedReader().readLines()
+    val output = File(outputName).printWriter()
+    output.println("<html>\n" + "<body>\n" + "<p>")
+    val stack = Stack<String>()
+    var previousSumOfTab = -1
+    for (str in input) {
+        var i = 0
+        while (str[i] == ' ') i++
+        val sumOfTab = i / 4
+        if (previousSumOfTab < sumOfTab) {
+            if (str[i] == '*') {
+                output.println("<ul>\n<li>")
+                stack.push("</ul>")
+            } else {
+                output.println("<ol>\n<li>")
+                stack.push("</ol>")
+            }
+        } else if (previousSumOfTab == sumOfTab) {
+            output.println("</li>\n<li>")
+        } else if (previousSumOfTab > sumOfTab) {
+            output.println("</li>")
+            val dif = previousSumOfTab - sumOfTab
+            repeat(dif) {
+                output.println(stack.peek() + "\n</li>")
+                stack.pop()
+            }
+            output.println("<li>")
+        }
+        output.println(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" })
+        previousSumOfTab = sumOfTab
+    }
+    while (!stack.empty()) {
+        output.println("</li>\n" + stack.peek())
+        stack.pop()
+    }
+    output.print("</p>\n" + "</body>\n" + "</html>")
+    output.close()
 }
 
 /**
@@ -393,8 +459,104 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  * - Списки, отделённые друг от друга пустой строкой, являются разными и должны оказаться в разных параграфах выходного файла.
  *
  */
+fun markdownStrToHtml(str: String): String {
+    val stack = Stack<String>()
+    stack.push("0")
+    var result = ""
+    var i = 0
+    while (i < str.length) {
+        if (str[i] == '*') {
+            when {
+                str[i + 1] == '*' -> {
+                    if (stack.peek() == "</b>") {
+                        result += stack.peek()
+                        stack.pop()
+                    } else {
+                        stack.push("</b>")
+                        result += "<b>"
+                    }
+                    i++
+                }
+                stack.peek() == "</i>" -> {
+                    result += stack.peek()
+                    stack.pop()
+                }
+                else -> {
+                    stack.push("</i>")
+                    result += "<i>"
+                }
+            }
+        } else if (str[i] == '~' && str[i + 1] == '~') {
+            if (stack.peek() == "</s>") {
+                result += stack.peek()
+                stack.pop()
+            } else {
+                stack.push("</s>")
+                result += "<s>"
+            }
+            i++
+        } else result += str[i]
+        i++
+    }
+    return result
+}
+
 fun markdownToHtml(inputName: String, outputName: String) {
-    TODO()
+    val input = File(inputName).bufferedReader().readLines()
+    val output = File(outputName).printWriter()
+    output.println("<html>\n" + "<body>\n" + "<p>")
+    val stack = Stack<String>()
+    stack.push("</p>")
+    var previousI = -1
+    fun releaseStack() {
+        while (stack.size > 1) {
+            output.println("</li>\n" + stack.peek())
+            stack.pop()
+        }
+        output.println(stack.peek())
+        stack.pop()
+        previousI = -1
+    }
+    for (str in input) {
+        if (str.isEmpty()) releaseStack()
+        else if (!str.trimStart().contains(Regex("""^(\d*\.)|^\*"""))) {
+            if (stack.empty()) {
+                stack.push("</p>")
+                output.println("<p>")
+            }
+            output.println(markdownStrToHtml(str))
+        } else {
+            if (stack.empty()) {
+                stack.push("</p>")
+                output.println("<p>")
+            }
+            var i = 0
+            while (str[i] == ' ') i++
+            if (previousI < i) {
+                if (str[i] == '*') {
+                    output.println("<ul>\n<li>")
+                    stack.push("</ul>")
+                } else {
+                    output.println("<ol>\n<li>")
+                    stack.push("</ol>")
+                }
+            } else if (previousI == i) {
+                output.println("</li>\n<li>")
+            } else if (previousI > i) {
+                output.println("</li>")
+                repeat((previousI - i) / 4) {
+                    output.println(stack.peek() + "\n</li>")
+                    stack.pop()
+                }
+                output.println("<li>")
+            }
+            output.println(markdownStrToHtml(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" }))
+            previousI = i
+        }
+    }
+    releaseStack()
+    output.print("</body>\n" + "</html>")
+    output.close()
 }
 
 /**
@@ -403,23 +565,23 @@ fun markdownToHtml(inputName: String, outputName: String) {
  * Вывести в выходной файл процесс умножения столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 111):
-   19935
-*    111
+19935
+ *    111
 --------
-   19935
+19935
 + 19935
 +19935
 --------
- 2212785
+2212785
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  * Нули в множителе обрабатывать так же, как и остальные цифры:
-  235
-*  10
+235
+ *  10
 -----
-    0
+0
 +235
 -----
- 2350
+2350
  *
  */
 
@@ -453,16 +615,16 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {//эта
  * Вывести в выходной файл процесс деления столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 22):
-  19935 | 22
- -198     906
- ----
-    13
-    -0
-    --
-    135
-   -132
-   ----
-      3
+19935 | 22
+-198     906
+----
+13
+-0
+--
+135
+-132
+----
+3
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
  */
