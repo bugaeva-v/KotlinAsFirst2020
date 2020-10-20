@@ -585,7 +585,7 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 
-fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {//эта функция уже принята в предыдущем сабмишене
+fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val file = File(outputName).printWriter()
     var l = digitNumber(lhv * rhv)
     if (lhv * rhv == 0) l = digitNumber(Math.max(lhv, rhv))
