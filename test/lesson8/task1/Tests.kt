@@ -3,7 +3,7 @@ package lesson8.task1
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.lang.Math.ulp
+import java.lang.Math.*
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -210,6 +210,7 @@ class Tests {
     fun lineByPoint() {
         assertApproxEquals(Line(Point(0.0, 0.0), PI / 2), lineByPoints(Point(0.0, 0.0), Point(0.0, 2.0)))
         assertApproxEquals(Line(Point(1.0, 1.0), PI / 4), lineByPoints(Point(1.0, 1.0), Point(3.0, 3.0)))
+
     }
 
     @Test

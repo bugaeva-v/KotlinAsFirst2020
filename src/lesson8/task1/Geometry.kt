@@ -201,7 +201,6 @@ fun bisectorByPoints(a: Point, b: Point): Line {
     val line = lineByPoints(a, b)
     val pointMedian = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     val angle = abs(line.angle + PI / 2) % PI
-    println("$a   $b   ${line.angle}   $pointMedian   $angle")
     return Line(pointMedian, angle)
 }
 
@@ -228,7 +227,6 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
                 c1 = list[i]
                 c2 = list[j]
             }
-
     return Pair(c1, c2)
 }
 
@@ -246,7 +244,6 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
     val m2 = bisectorByPoints(b, c)
     val o = m1.crossPoint(m2)
     val r = o.distance(a)
-    println("m1=$m1\nm2=$m2\no=$o\nr=$r")
     return Circle(o, r)
 }
 
