@@ -95,7 +95,6 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
         for (strInFile in input) {
             val str = strInFile.toLowerCase()
             var index = 0
-            if (!str.contains(s)) continue
             while (index != strInFile.length) {
                 val f = Regex(s).find(str, index)
                 if (s.length == 1 && str[index] == s[0]) {
