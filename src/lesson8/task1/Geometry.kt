@@ -80,9 +80,12 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double =
-        if (center.distance(other.center) < radius + other.radius) 0.0
-        else center.distance(other.center) - radius - other.radius
+    fun distance(other: Circle): Double {
+        val distance = center.distance(other.center)
+        return if (distance < radius + other.radius) 0.0
+        else distance - radius - other.radius
+
+    }
 
     /**
      * Тривиальная (1 балл)
@@ -111,16 +114,13 @@ data class Segment(val begin: Point, val end: Point) {
  */
 fun diameter(vararg points: Point): Segment {
     if (points.size < 2) throw IllegalArgumentException()
-    val list = points.toList()
     var p1 = Point(0.0, 0.0)
     var p2 = Point(0.0, 0.0)
-    var distance = p1.distance(p2)
-    for (i in 0..list.lastIndex)
-        for (j in i + 1..list.lastIndex)
-            if (distance < list[i].distance(list[j])) {
-                p1 = list[i]
-                p2 = list[j]
-                distance = p1.distance(p2)
+    for (i in 0..points.lastIndex)
+        for (j in i + 1..points.lastIndex)
+            if (p1.distance(p2) < points[i].distance(points[j])) {
+                p1 = points[i]
+                p2 = points[j]
             }
     return Segment(p1, p2)
 }
@@ -258,5 +258,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
+fun minContainingCircle(vararg points: Point): Circle {
+    TODO()
+}
 
