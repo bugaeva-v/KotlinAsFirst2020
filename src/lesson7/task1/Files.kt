@@ -5,7 +5,7 @@ package lesson7.task1
 import java.io.File
 import java.lang.Math.max
 import lesson3.task1.digitNumber
-import java.util.*
+import kotlin.text.StringBuilder
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -90,14 +90,14 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val input = File(inputName).bufferedReader().readLines()
     val map = mutableMapOf<String, Int>()
     for (i in substrings) map[i] = 0
-    for (strInList in substrings.toSet()) {
+    for ((strInList, _) in map) {
         for (strInFile in input) {
             var index = 0
             while (index != strInFile.length) {
                 val found = strInFile.indexOf(strInList, index, true)
                 if (found == -1) break
                 index = found + 1
-                map[strInList] = map.getOrPut(strInList) { 1 } + 1
+                map[strInList] = map[strInList]!! + 1
             }
         }
     }
@@ -408,43 +408,43 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val input = File(inputName).bufferedReader().readLines()
-    val output = File(outputName).printWriter()
-    output.println("<html>\n" + "<body>\n" + "<p>")
-    val stack = Stack<String>()
-    var previousSumOfTab = -1
-    for (str in input) {
-        var i = 0
-        while (str[i] == ' ') i++
-        val sumOfTab = i / 4
-        if (previousSumOfTab < sumOfTab) {
-            if (str[i] == '*') {
-                output.println("<ul>\n<li>")
-                stack.push("</ul>")
-            } else {
-                output.println("<ol>\n<li>")
-                stack.push("</ol>")
+    val input = File(inputName)
+    File(outputName).printWriter().use {
+        it.println("<html>\n" + "<body>\n" + "<p>")
+        val stack = mutableListOf<String>()
+        var previousSumOfTab = -1
+        input.forEachLine { str ->
+            var i = 0
+            while (str[i] == ' ') i++
+            val sumOfTab = i / 4
+            if (previousSumOfTab < sumOfTab) {
+                if (str[i] == '*') {
+                    it.println("<ul>\n<li>")
+                    stack.add("</ul>")
+                } else {
+                    it.println("<ol>\n<li>")
+                    stack.add("</ol>")
+                }
+            } else if (previousSumOfTab == sumOfTab) {
+                it.println("</li>\n<li>")
+            } else if (previousSumOfTab > sumOfTab) {
+                it.println("</li>")
+                val dif = previousSumOfTab - sumOfTab
+                for (j in 1..dif) {
+                    it.println(stack.last() + "\n</li>")
+                    stack.removeLast()
+                }
+                it.println("<li>")
             }
-        } else if (previousSumOfTab == sumOfTab) {
-            output.println("</li>\n<li>")
-        } else if (previousSumOfTab > sumOfTab) {
-            output.println("</li>")
-            val dif = previousSumOfTab - sumOfTab
-            repeat(dif) {
-                output.println(stack.peek() + "\n</li>")
-                stack.pop()
-            }
-            output.println("<li>")
+            it.println(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" })
+            previousSumOfTab = sumOfTab
         }
-        output.println(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" })
-        previousSumOfTab = sumOfTab
+        while (stack.isNotEmpty()) {
+            it.println("</li>\n" + stack.last())
+            stack.removeLast()
+        }
+        it.print("</p>\n" + "</body>\n" + "</html>")
     }
-    while (!stack.empty()) {
-        output.println("</li>\n" + stack.peek())
-        stack.pop()
-    }
-    output.print("</p>\n" + "</body>\n" + "</html>")
-    output.close()
 }
 
 /**
@@ -456,103 +456,103 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  *
  */
 fun markdownStrToHtml(str: String): String {
-    val stack = Stack<String>()
-    stack.push("0")
-    var result = ""
+    val stack = mutableListOf<String>()
+    stack.add("0")
+    var result = StringBuilder(0)
     var i = 0
     while (i < str.length) {
         if (str[i] == '*') {
             when {
                 str[i + 1] == '*' -> {
-                    if (stack.peek() == "</b>") {
-                        result += stack.peek()
-                        stack.pop()
+                    if (stack.last() == "</b>") {
+                        result.append(stack.last())
+                        stack.removeLast()
                     } else {
-                        stack.push("</b>")
-                        result += "<b>"
+                        stack.add("</b>")
+                        result.append("<b>")
                     }
                     i++
                 }
-                stack.peek() == "</i>" -> {
-                    result += stack.peek()
-                    stack.pop()
+                stack.last() == "</i>" -> {
+                    result.append(stack.last())
+                    stack.removeLast()
                 }
                 else -> {
-                    stack.push("</i>")
-                    result += "<i>"
+                    stack.add("</i>")
+                    result.append("<i>")
                 }
             }
         } else if (str[i] == '~' && str[i + 1] == '~') {
-            if (stack.peek() == "</s>") {
-                result += stack.peek()
-                stack.pop()
+            if (stack.last() == "</s>") {
+                result.append(stack.last())
+                stack.removeLast()
             } else {
-                stack.push("</s>")
-                result += "<s>"
+                stack.add("</s>")
+                result.append("<s>")
             }
             i++
-        } else result += str[i]
+        } else result.append(str[i])
         i++
     }
-    return result
+    return result.toString()
 }
 
 fun markdownToHtml(inputName: String, outputName: String) {
-    val input = File(inputName).bufferedReader().readLines()
-    val output = File(outputName).printWriter()
-    output.println("<html>\n" + "<body>\n" + "<p>")
-    val stack = Stack<String>()
-    stack.push("</p>")
-    var previousI = -1
-    fun releaseStack() {
-        while (stack.size > 1) {
-            output.println("</li>\n" + stack.peek())
-            stack.pop()
+    val input = File(inputName)
+    File(outputName).printWriter().use {
+        it.println("<html>\n" + "<body>\n" + "<p>")
+        val stack = mutableListOf<String>()
+        stack.add("</p>")
+        var previousI = -1
+        fun releaseStack() {
+            while (stack.size > 1) {
+                it.println("</li>\n" + stack.last())
+                stack.removeLast()
+            }
+            it.println(stack.last())
+            stack.removeLast()
+            previousI = -1
         }
-        output.println(stack.peek())
-        stack.pop()
-        previousI = -1
-    }
-    for (str in input) {
-        if (str.isEmpty()) releaseStack()
-        else if (!str.trimStart().contains(Regex("""^(\d*\.)|^\*"""))) {
-            if (stack.empty()) {
-                stack.push("</p>")
-                output.println("<p>")
-            }
-            output.println(markdownStrToHtml(str))
-        } else {
-            if (stack.empty()) {
-                stack.push("</p>")
-                output.println("<p>")
-            }
-            var i = 0
-            while (str[i] == ' ') i++
-            if (previousI < i) {
-                if (str[i] == '*') {
-                    output.println("<ul>\n<li>")
-                    stack.push("</ul>")
-                } else {
-                    output.println("<ol>\n<li>")
-                    stack.push("</ol>")
+        input.forEachLine { str ->
+            if (str.isEmpty()) releaseStack()
+            else if (!str.trimStart().contains(Regex("""^(\d*\.)|^\*"""))) {
+                if (stack.isEmpty()) {
+                    stack.add("</p>")
+                    it.println("<p>")
                 }
-            } else if (previousI == i) {
-                output.println("</li>\n<li>")
-            } else if (previousI > i) {
-                output.println("</li>")
-                repeat((previousI - i) / 4) {
-                    output.println(stack.peek() + "\n</li>")
-                    stack.pop()
+                it.println(markdownStrToHtml(str))
+            } else {
+                if (stack.isEmpty()) {
+                    stack.add("</p>")
+                    it.println("<p>")
                 }
-                output.println("<li>")
+                var i = 0
+                while (str[i] == ' ') i++
+                if (previousI < i) {
+                    if (str[i] == '*') {
+                        it.println("<ul>\n<li>")
+                        stack.add("</ul>")
+                    } else {
+                        it.println("<ol>\n<li>")
+                        stack.add("</ol>")
+                    }
+                } else if (previousI == i) {
+                    it.println("</li>\n<li>")
+                } else if (previousI > i) {
+                    it.println("</li>")
+                    for (j in 1..(previousI - i) / 4) {
+                        it.println(stack.last() + "\n</li>")
+                        stack.removeLast()
+                    }
+                    it.println("<li>")
+                }
+                it.println(markdownStrToHtml(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" }))
+                previousI = i
             }
-            output.println(markdownStrToHtml(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" }))
-            previousI = i
         }
+        releaseStack()
+        it.print("</body>\n" + "</html>")
     }
-    releaseStack()
-    output.print("</body>\n" + "</html>")
-    output.close()
 }
 
 /**
