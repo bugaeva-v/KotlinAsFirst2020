@@ -430,19 +430,15 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
             } else if (previousSumOfTab > sumOfTab) {
                 it.println("</li>")
                 val dif = previousSumOfTab - sumOfTab
-                for (j in 1..dif) {
-                    it.println(stack.last() + "\n</li>")
-                    stack.removeLast()
-                }
+                for (j in 1..dif)
+                    it.println(stack.removeLast() + "\n</li>")
                 it.println("<li>")
             }
             it.println(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" })
             previousSumOfTab = sumOfTab
         }
-        while (stack.isNotEmpty()) {
-            it.println("</li>\n" + stack.last())
-            stack.removeLast()
-        }
+        while (stack.isNotEmpty())
+            it.println("</li>\n" + stack.removeLast())
         it.print("</p>\n" + "</body>\n" + "</html>")
     }
 }
@@ -465,8 +461,7 @@ fun markdownStrToHtml(str: String): String {
             when {
                 str[i + 1] == '*' -> {
                     if (stack.last() == "</b>") {
-                        result.append(stack.last())
-                        stack.removeLast()
+                        result.append(stack.removeLast())
                     } else {
                         stack.add("</b>")
                         result.append("<b>")
@@ -474,8 +469,7 @@ fun markdownStrToHtml(str: String): String {
                     i++
                 }
                 stack.last() == "</i>" -> {
-                    result.append(stack.last())
-                    stack.removeLast()
+                    result.append(stack.removeLast())
                 }
                 else -> {
                     stack.add("</i>")
@@ -484,8 +478,7 @@ fun markdownStrToHtml(str: String): String {
             }
         } else if (str[i] == '~' && str[i + 1] == '~') {
             if (stack.last() == "</s>") {
-                result.append(stack.last())
-                stack.removeLast()
+                result.append(stack.removeLast())
             } else {
                 stack.add("</s>")
                 result.append("<s>")
@@ -505,12 +498,9 @@ fun markdownToHtml(inputName: String, outputName: String) {
         stack.add("</p>")
         var previousI = -1
         fun releaseStack() {
-            while (stack.size > 1) {
-                it.println("</li>\n" + stack.last())
-                stack.removeLast()
-            }
-            it.println(stack.last())
-            stack.removeLast()
+            while (stack.size > 1)
+                it.println("</li>\n" + stack.removeLast())
+            it.println(stack.removeLast())
             previousI = -1
         }
         input.forEachLine { str ->
@@ -540,10 +530,8 @@ fun markdownToHtml(inputName: String, outputName: String) {
                     it.println("</li>\n<li>")
                 } else if (previousI > i) {
                     it.println("</li>")
-                    for (j in 1..(previousI - i) / 4) {
-                        it.println(stack.last() + "\n</li>")
-                        stack.removeLast()
-                    }
+                    for (j in 1..(previousI - i) / 4)
+                        it.println(stack.removeLast() + "\n</li>")
                     it.println("<li>")
                 }
                 it.println(markdownStrToHtml(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" }))
