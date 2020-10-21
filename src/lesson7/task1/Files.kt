@@ -453,14 +453,13 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  */
 fun markdownStrToHtml(str: String): String {
     val stack = mutableListOf<String>()
-    stack.add("0")
     var result = StringBuilder(0)
     var i = 0
     while (i < str.length) {
         if (str[i] == '*') {
             when {
                 str[i + 1] == '*' -> {
-                    if (stack.last() == "</b>") {
+                    if (stack.lastOrNull() == "</b>") {
                         result.append(stack.removeLast())
                     } else {
                         stack.add("</b>")
@@ -468,7 +467,7 @@ fun markdownStrToHtml(str: String): String {
                     }
                     i++
                 }
-                stack.last() == "</i>" -> {
+                stack.lastOrNull() == "</i>" -> {
                     result.append(stack.removeLast())
                 }
                 else -> {
@@ -477,7 +476,7 @@ fun markdownStrToHtml(str: String): String {
                 }
             }
         } else if (str[i] == '~' && str[i + 1] == '~') {
-            if (stack.last() == "</s>") {
+            if (stack.lastOrNull() == "</s>") {
                 result.append(stack.removeLast())
             } else {
                 stack.add("</s>")
@@ -504,38 +503,45 @@ fun markdownToHtml(inputName: String, outputName: String) {
             previousI = -1
         }
         input.forEachLine { str ->
-            if (str.isEmpty()) releaseStack()
-            else if (!str.trimStart().contains(Regex("""^(\d*\.)|^\*"""))) {
-                if (stack.isEmpty()) {
-                    stack.add("</p>")
-                    it.println("<p>")
-                }
-                it.println(markdownStrToHtml(str))
-            } else {
-                if (stack.isEmpty()) {
-                    stack.add("</p>")
-                    it.println("<p>")
-                }
-                var i = 0
-                while (str[i] == ' ') i++
-                if (previousI < i) {
-                    if (str[i] == '*') {
-                        it.println("<ul>\n<li>")
-                        stack.add("</ul>")
-                    } else {
-                        it.println("<ol>\n<li>")
-                        stack.add("</ol>")
+            when {
+                str.isEmpty() -> releaseStack()
+                !str.trimStart().contains(Regex("""^(\d*\.)|^\*""")) -> {
+                    if (stack.isEmpty()) {
+                        stack.add("</p>")
+                        it.println("<p>")
                     }
-                } else if (previousI == i) {
-                    it.println("</li>\n<li>")
-                } else if (previousI > i) {
-                    it.println("</li>")
-                    for (j in 1..(previousI - i) / 4)
-                        it.println(stack.removeLast() + "\n</li>")
-                    it.println("<li>")
+                    it.println(markdownStrToHtml(str))
                 }
-                it.println(markdownStrToHtml(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" }))
-                previousI = i
+                else -> {
+                    if (stack.isEmpty()) {
+                        stack.add("</p>")
+                        it.println("<p>")
+                    }
+                    var i = 0
+                    while (str[i] == ' ') i++
+                    when {
+                        previousI < i -> {
+                            if (str[i] == '*') {
+                                it.println("<ul>\n<li>")
+                                stack.add("</ul>")
+                            } else {
+                                it.println("<ol>\n<li>")
+                                stack.add("</ol>")
+                            }
+                        }
+                        previousI == i -> {
+                            it.println("</li>\n<li>")
+                        }
+                        else -> {
+                            it.println("</li>")
+                            for (j in 1..(previousI - i) / 4)
+                                it.println(stack.removeLast() + "\n</li>")
+                            it.println("<li>")
+                        }
+                    }
+                    it.println(markdownStrToHtml(str.replace(Regex("""^((\s*\d*\.)|^(\s*\*))\s*""")) { "" }))
+                    previousI = i
+                }
             }
         }
         releaseStack()
