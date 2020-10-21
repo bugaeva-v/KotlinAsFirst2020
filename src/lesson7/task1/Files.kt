@@ -91,19 +91,13 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
     val map = mutableMapOf<String, Int>()
     for (i in substrings) map[i] = 0
     for (strInList in substrings.toSet()) {
-        val s = strInList.toLowerCase()
         for (strInFile in input) {
-            val str = strInFile.toLowerCase()
             var index = 0
             while (index != strInFile.length) {
-                val f = Regex(s).find(str, index)
-                if (s.length == 1 && str[index] == s[0]) {
-                    map[strInList] = map.getOrPut(strInList) { 1 } + 1
-                } else if (s.length != 1 && f != null) {
-                    index = f.range.toList().first()
-                    map[strInList] = map.getOrPut(strInList) { 1 } + 1
-                }
-                index++
+                val found = strInFile.indexOf(strInList, index, true)
+                if (found == -1) break
+                index = found + 1
+                map[strInList] = map.getOrPut(strInList) { 1 } + 1
             }
         }
     }
