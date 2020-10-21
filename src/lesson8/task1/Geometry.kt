@@ -114,13 +114,15 @@ data class Segment(val begin: Point, val end: Point) {
  */
 fun diameter(vararg points: Point): Segment {
     if (points.size < 2) throw IllegalArgumentException()
-    var p1 = Point(0.0, 0.0)
-    var p2 = Point(0.0, 0.0)
+    var p1 = points[0]
+    var p2 = points[1]
+    var distance = p1.distance(p2)
     for (i in 0..points.lastIndex)
         for (j in i + 1..points.lastIndex)
-            if (p1.distance(p2) < points[i].distance(points[j])) {
+            if (distance < points[i].distance(points[j])) {
                 p1 = points[i]
                 p2 = points[j]
+                distance = p1.distance(p2)
             }
     return Segment(p1, p2)
 }
@@ -179,18 +181,17 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line =
-    Line(
-        s.begin, if (s.end.x != s.begin.x) (atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x)) + PI) % PI
-        else PI / 2
-    )
+fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
 
 /**
  * Средняя (3 балла)
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
+fun lineByPoints(a: Point, b: Point): Line = Line(
+    a, if (b.x != a.x) (atan2(b.y - a.y, b.x - a.x) + PI) % PI
+    else PI / 2
+)
 
 /**
  * Сложная (5 баллов)
@@ -218,14 +219,15 @@ fun bisectorByPoints(a: Point, b: Point): Line {
  */
 fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
     if (circles.size < 2) throw IllegalArgumentException()
-    val list = circles.toList()
-    var c1 = list[0]
-    var c2 = list[1]
-    for (i in 0..list.lastIndex)
-        for (j in i + 1..list.lastIndex)
-            if (c1.distance(c2) > list[i].distance(list[j])) {
-                c1 = list[i]
-                c2 = list[j]
+    var c1 = circles[0]
+    var c2 = circles[1]
+    var distance = c1.distance(c2)
+    for (i in 0..circles.lastIndex)
+        for (j in i + 1..circles.lastIndex)
+            if (distance > circles[i].distance(circles[j])) {
+                c1 = circles[i]
+                c2 = circles[j]
+                distance = c1.distance(c2)
             }
     return Pair(c1, c2)
 }
