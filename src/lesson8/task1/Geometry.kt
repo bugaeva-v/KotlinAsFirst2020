@@ -4,11 +4,7 @@ package lesson8.task1
 
 import lesson1.task1.sqr
 import java.lang.IllegalArgumentException
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
-import kotlin.math.acos
+import kotlin.math.*
 
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
@@ -201,7 +197,7 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
 fun bisectorByPoints(a: Point, b: Point): Line {
     val line = lineByPoints(a, b)
     val pointMedian = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
-    val angle = (line.angle + PI / 2) % PI
+    val angle = abs(line.angle - PI / 2) % PI
     println("$pointMedian   $angle  ${Line(pointMedian, angle)}")
     return Line(pointMedian, angle)
 }
