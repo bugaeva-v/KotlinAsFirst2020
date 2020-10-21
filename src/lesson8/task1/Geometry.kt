@@ -228,6 +228,7 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
                 c1 = list[i]
                 c2 = list[j]
             }
+
     return Pair(c1, c2)
 }
 
