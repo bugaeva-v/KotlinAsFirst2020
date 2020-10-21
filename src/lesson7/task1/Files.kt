@@ -453,7 +453,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
  */
 fun markdownStrToHtml(str: String): String {
     val stack = mutableListOf<String>()
-    var result = StringBuilder(0)
+    var result = StringBuilder()
     var i = 0
     while (i < str.length) {
         if (str[i] == '*') {
