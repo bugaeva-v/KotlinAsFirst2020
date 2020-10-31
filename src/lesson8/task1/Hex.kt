@@ -302,19 +302,37 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
  * Если все три точки совпадают, вернуть шестиугольник нулевого радиуса с центром в данной точке.
  */
 fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
+    val set = mutableSetOf(0, 1, 2, 3, 4, 5)
+    if (b.y < a.y || c.y < a.y)
+        set.remove(0)
+    if (b.x > a.x || c.x > a.x)
+        set.remove(1)
+    if (b.x + b.y > a.x + a.y || c.x + c.y > a.x + a.y)
+        set.remove(2)
+    if (b.y > a.y || c.y > a.y)
+        set.remove(3)
+    if (b.x < a.x || c.x < a.x)
+        set.remove(4)
+    if (b.x + b.y < a.x + a.y || c.x + c.y < a.x + a.y)
+        set.remove(5)
+    println(set)
+
     for (r in 0..max(a.distance(b), max(a.distance(c), b.distance(c))))
         for (i in 0..r) {
-            val hex = arrayOf(
-                Hexagon(HexPoint(a.x - i, a.y + r), r),
-                Hexagon(HexPoint(a.x - r, a.y + r - i), r),
-                Hexagon(HexPoint(a.x - r + i, a.y - i), r),
+            val hex = arrayOf(//                               3
+                Hexagon(HexPoint(a.x - i, a.y + r), r),//    4/--\2
+                Hexagon(HexPoint(a.x - r, a.y + r - i), r),//5\__/1
+                Hexagon(HexPoint(a.x - r + i, a.y - i), r),//   0
                 Hexagon(HexPoint(a.x + i, a.y - r), r),
                 Hexagon(HexPoint(a.x + r, a.y - r + i), r),
                 Hexagon(HexPoint(a.x + r - i, a.y + i), r)
             )
-            for (j in 0..5)
-                if (hex[j].contains(b) && hex[j].contains(c) && b in hex[j].border() && c in hex[j].border())
-                    return hex[j]
+            for (j in set) {
+                if (hex[j].contains(b) && hex[j].contains(c)) {
+                    if (b in hex[j].border() && c in hex[j].border())
+                        return hex[j]
+                }
+            }
         }
     return null
 }
