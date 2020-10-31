@@ -101,6 +101,17 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
         }
         return set.toSet()
     }
+
+    /**
+     * Проверяет точки на принадлежность к границе шестиугольника
+     */
+    fun isBorder(p: HexPoint): Boolean =
+        p.y == center.y - radius && p.x in center.x..center.x + radius ||
+                p.x == center.x + radius && p.y in center.y - radius..center.y ||
+                p.x + p.y == center.x + center.y + radius && p.y in center.y..center.y + radius ||
+                p.y == center.y + radius && p.x in center.x - radius..center.x ||
+                p.x == center.x - radius && p.y in center.y..center.y + radius ||
+                p.x + p.y == center.x + center.y - radius && p.y in center.y - radius..center.y
 }
 
 /**
@@ -317,8 +328,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         set.remove(5)
     println(set)
     val max = max(a.distance(b), max(a.distance(c), b.distance(c)))
-
-    for (r in max/2..max)
+    for (r in max / 2..max)
         for (i in 0..r) {
             val hex = arrayOf(//                               3
                 Hexagon(HexPoint(a.x - i, a.y + r), r),//    4/--\2
@@ -329,9 +339,10 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
                 Hexagon(HexPoint(a.x + r - i, a.y + i), r)
             )
             for (j in set) {
-                if (hex[j].contains(b) && hex[j].contains(c)) {
-                    if (b in hex[j].border() && c in hex[j].border())
-                        return hex[j]
+                println(0)
+                if (hex[j].isBorder(b) && hex[j].isBorder(c)) {
+                    println(2)
+                    return hex[j]
                 }
             }
         }
@@ -350,7 +361,31 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
  */
 
 fun minContainingHexagon(vararg points: HexPoint): Hexagon {
-    TODO()
+    if (points.isEmpty()) throw IllegalArgumentException()
+    val set = points.toSet()
+    var x = 0
+    var y = 0
+    for (i in set) {
+        x += i.x
+        y += i.y
+    }
+    val m = HexPoint(x / set.size, y / set.size)
+    var maxDistance = 0
+    var minDistance = Double.POSITIVE_INFINITY.toInt()
+    for (i in set) {
+        if (i.distance(m) > maxDistance)
+            maxDistance = i.distance(m)
+
+        if (i.distance(m) < minDistance)
+            minDistance = i.distance(m)
+    }
+    val centers = Hexagon(m, 1).border().toMutableSet()
+    centers.add(m)
+    for (r in maxDistance / 2..maxDistance)
+        for (i in centers)
+            if (set.all { Hexagon(i, r).contains(it) })
+                return Hexagon(i, r)
+    return Hexagon(m, 0)
 }
 
 
