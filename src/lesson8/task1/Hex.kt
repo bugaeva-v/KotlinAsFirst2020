@@ -313,7 +313,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
                 Hexagon(HexPoint(a.x + r - i, a.y + i), r)
             )
             for (j in 0..5)
-                if (b in hex[j].border() && c in hex[j].border())
+                if (hex[j].contains(b) && hex[j].contains(c) && b in hex[j].border() && c in hex[j].border())
                     return hex[j]
         }
     return null
