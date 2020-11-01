@@ -127,7 +127,7 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * А, например, 13-26 не является "правильным" отрезком.
      */
     fun isValid(): Boolean =
-        begin.x == end.x && begin.y != end.y || begin.y == end.y && begin.x != end.x || begin.x + begin.y == end.x + end.y
+        begin != end && (begin.x == end.x || begin.y == end.y || begin.x + begin.y == end.x + end.y)
 
     /**
      * Средняя (3 балла)
@@ -361,7 +361,8 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
  */
 
 fun minContainingHexagon(vararg points: HexPoint): Hexagon {
-    if (points.isEmpty()) throw IllegalArgumentException()
+    TODO()
+    /*if (points.isEmpty()) throw IllegalArgumentException()
     val set = points.toSet()
     var x = 0
     var y = 0
@@ -370,7 +371,35 @@ fun minContainingHexagon(vararg points: HexPoint): Hexagon {
         y += i.y
     }
     val m = HexPoint(x / set.size, y / set.size)
-    var maxDistance = 0
+    var minX = Double.POSITIVE_INFINITY.toInt()
+    var p1: HexPoint
+    var minY = Double.POSITIVE_INFINITY.toInt()
+    var p2: HexPoint
+    var maxX = Double.NEGATIVE_INFINITY.toInt()
+    var p3: HexPoint
+    var maxY = Double.NEGATIVE_INFINITY.toInt()
+    var p4: HexPoint
+    for ((x, y) in set) {
+        if (x > maxX) {
+            p1 = HexPoint(x, y)
+            maxX = x
+        } else if (x < minX) {
+            p2 = HexPoint(x, y)
+            minX = x
+        }
+        if (y > maxY) {
+            p3 = HexPoint(x, y)
+            maxY = y
+        } else if (y < minY) {
+            p4 = HexPoint(x, y)
+            minY = y
+        }
+    }
+    val max = max(maxX - minX, maxY - minY)
+    for (r in max..max * 2) {
+
+    }
+    *//*var maxDistance = 0
     var minDistance = Double.POSITIVE_INFINITY.toInt()
     for (i in set) {
         if (i.distance(m) > maxDistance)
@@ -384,8 +413,8 @@ fun minContainingHexagon(vararg points: HexPoint): Hexagon {
     for (r in maxDistance / 2..maxDistance)
         for (i in centers)
             if (set.all { Hexagon(i, r).contains(it) })
-                return Hexagon(i, r)
-    return Hexagon(m, 0)
+                return Hexagon(i, r)*//*
+    return Hexagon(m, 0)*/
 }
 
 
