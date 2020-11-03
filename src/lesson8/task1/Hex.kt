@@ -161,10 +161,10 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
             Direction.DOWN_LEFT,
             Direction.DOWN_RIGHT
         )
-        begin.x < end.x && begin.y < end.y -> Pair(Direction.UP_RIGHT, Direction.RIGHT)
-        begin.x > end.x && begin.y < end.y -> Pair(Direction.UP_LEFT, Direction.LEFT)
-        begin.x > end.x && begin.y > end.y -> Pair(Direction.DOWN_LEFT, Direction.LEFT)
-        else -> Pair(Direction.DOWN_RIGHT, Direction.RIGHT)
+        begin.x < end.x && begin.y < end.y -> Pair(Direction.RIGHT, Direction.UP_RIGHT)
+        begin.x > end.x && begin.y < end.y -> Pair(Direction.LEFT, Direction.UP_LEFT)
+        begin.x > end.x && begin.y > end.y -> Pair(Direction.LEFT, Direction.DOWN_LEFT)
+        else -> Pair(Direction.RIGHT, Direction.DOWN_RIGHT)
     }
 
     override fun equals(other: Any?) =
