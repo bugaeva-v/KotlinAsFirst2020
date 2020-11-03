@@ -216,9 +216,7 @@ enum class Direction {
      */
     fun next(): Direction =
         when (this) {
-            INCORRECT -> {
-                throw IllegalArgumentException("This direction is incorrect.")
-            }
+            INCORRECT -> throw IllegalArgumentException("This direction is incorrect.")
             DOWN_RIGHT -> RIGHT
             else -> values()[this.ordinal + 1]
         }
