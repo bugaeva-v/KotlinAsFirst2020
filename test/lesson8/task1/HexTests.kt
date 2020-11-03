@@ -12,6 +12,7 @@ class HexTests {
     @Tag("3")
     fun hexPointDistance() {
         assertEquals(5, HexPoint(6, 1).distance(HexPoint(1, 4)))
+        assertEquals(2, HexPoint(4, 2).distance(HexPoint(3, 4)))
     }
 
     @Test
@@ -28,12 +29,34 @@ class HexTests {
     }
 
     @Test
+    @Tag(" ")
+    fun hexagonBorder() {
+        assertEquals(
+            setOf(
+                HexPoint(y = 3, x = 1),
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 5, x = 1),
+                HexPoint(y = 5, x = 2),
+                HexPoint(y = 5, x = 3),
+                HexPoint(y = 4, x = 4),
+                HexPoint(y = 3, x = 5),
+                HexPoint(y = 2, x = 5),
+                HexPoint(y = 1, x = 5),
+                HexPoint(y = 1, x = 4),
+                HexPoint(y = 1, x = 3),
+                HexPoint(y = 2, x = 2)
+            ), Hexagon(HexPoint(3, 3), 2).border()
+        )
+    }
+
+    @Test
     @Tag("2")
     fun hexSegmentValid() {
         assertTrue(HexSegment(HexPoint(1, 3), HexPoint(5, 3)).isValid())
         assertTrue(HexSegment(HexPoint(3, 1), HexPoint(3, 6)).isValid())
         assertTrue(HexSegment(HexPoint(1, 5), HexPoint(4, 2)).isValid())
         assertFalse(HexSegment(HexPoint(3, 1), HexPoint(6, 2)).isValid())
+        assertFalse(HexSegment(HexPoint(-1000, -999), HexPoint(-1000, -999)).isValid())
     }
 
     @Test
@@ -118,12 +141,12 @@ class HexTests {
     @Test
     @Tag("20")
     fun hexagonByThreePoints() {
-        assertEquals(
-            Hexagon(HexPoint(4, 2), 2),
-            hexagonByThreePoints(HexPoint(3, 1), HexPoint(2, 3), HexPoint(4, 4))
-        )
         assertNull(
             hexagonByThreePoints(HexPoint(3, 1), HexPoint(2, 3), HexPoint(5, 4))
+        )
+        assertEquals(
+            Hexagon(HexPoint(8, 3), 3),
+            hexagonByThreePoints(HexPoint(5, 5), HexPoint(5, 6), HexPoint(5, 3))
         )
         assertEquals(
             3,
