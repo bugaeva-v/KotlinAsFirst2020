@@ -38,19 +38,14 @@ data class HexPoint(val x: Int, val y: Int) {
      * Расстояние вычисляется как число единичных отрезков в пути между двумя гексами.
      * Например, путь межу гексами 16 и 41 (см. выше) может проходить через 25, 34, 43 и 42 и имеет длину 5.
      */
-    fun distance(other: HexPoint): Int {
-        var point = this
-        val direction = HexSegment(this, other).directionForAny()
-        var distance = 0
-        while (point.y != other.y && point.x + point.y != other.x + other.y && point.x != other.x) {
-            point = point.move(direction.first, 1)
-            distance++
-        }
-        while (point != other) {
-            point = point.move(direction.second ?: direction.first, 1)
-            distance++
-        }
-        return distance
+    fun distance(other: HexPoint): Int = when {
+        other.y > y && other.x <= x && other.y + other.x >= y + x ||
+                other.y < y && other.x >= x && other.y + other.x <= y + x ->
+            abs(y - other.y)
+        other.y >= y && other.x > x || other.y <= y && other.x < x ->
+            abs(y - other.y) + abs(x - other.x)
+        else ->
+            abs(y - other.y) + abs(other.y + other.x - y - x)
     }
 
     override fun toString(): String = "$y.$x"
@@ -157,7 +152,7 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * Возвращает направления для обеих частей любого возможного пути
      */
     fun directionForAny(): Pair<Direction, Direction?> = when {
-        HexSegment(begin, end).isValid() -> Pair<Direction, Direction?>(HexSegment(begin, end).direction(), null)
+        this.isValid() -> Pair<Direction, Direction?>(this.direction(), null)
         begin.y < end.y && end.x in begin.x - end.y + begin.y + 1 until begin.x -> Pair(
             Direction.UP_LEFT,
             Direction.UP_RIGHT
@@ -220,9 +215,11 @@ enum class Direction {
      * При решении этой задачи попробуйте обойтись без перечисления всех семи вариантов.
      */
     fun next(): Direction =
-        when {
-            this == INCORRECT -> throw IllegalArgumentException()
-            this == DOWN_RIGHT -> RIGHT
+        when (this) {
+            INCORRECT -> {
+                throw IllegalArgumentException("This direction is incorrect.")
+            }
+            DOWN_RIGHT -> RIGHT
             else -> values()[this.ordinal + 1]
         }
 
@@ -249,7 +246,7 @@ enum class Direction {
  * 45, direction = DOWN_LEFT, distance = 4 --> 05
  */
 fun HexPoint.move(direction: Direction, distance: Int): HexPoint {
-    if (direction == Direction.INCORRECT) throw IllegalArgumentException()
+    if (direction == Direction.INCORRECT) throw IllegalArgumentException("This direction is incorrect.")
     if (distance == 0) return this
     return when (if (distance < 0) direction.opposite() else direction) {
         Direction.RIGHT -> HexPoint(x + abs(distance), y)
@@ -326,7 +323,6 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         set.remove(4)
     if (b.x + b.y < a.x + a.y || c.x + c.y < a.x + a.y)
         set.remove(5)
-    println(set)
     val max = max(a.distance(b), max(a.distance(c), b.distance(c)))
     for (r in max / 2..max)
         for (i in 0..r) {
@@ -338,13 +334,9 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
                 Hexagon(HexPoint(a.x + r, a.y - r + i), r),
                 Hexagon(HexPoint(a.x + r - i, a.y + i), r)
             )
-            for (j in set) {
-                println(0)
-                if (hex[j].isBorder(b) && hex[j].isBorder(c)) {
-                    println(2)
+            for (j in set)
+                if (hex[j].isBorder(b) && hex[j].isBorder(c))
                     return hex[j]
-                }
-            }
         }
     return null
 }
