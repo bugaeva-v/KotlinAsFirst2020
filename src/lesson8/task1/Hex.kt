@@ -321,7 +321,7 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
         set.remove(4)
     if (b.x + b.y < a.x + a.y || c.x + c.y < a.x + a.y)
         set.remove(5)
-    val max = max(a.distance(b), max(a.distance(c), b.distance(c)))
+    val max = maxOf(a.distance(b), a.distance(c), b.distance(c))
     for (r in max / 2..max)
         for (i in 0..r) {
             val hex = arrayOf(//                               3
