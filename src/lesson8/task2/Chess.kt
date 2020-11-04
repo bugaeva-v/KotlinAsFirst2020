@@ -228,8 +228,7 @@ fun kingMoveNumber(start: Square, end: Square): Int = when {
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun kingTrajectory(start: Square, end: Square): List<Square> {
-    TODO()
-    /*var column = start.column
+    var column = start.column
     var row = start.row
     val r: Int
     val c: Int
@@ -262,7 +261,7 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
             column += c
             answer.add(Square(column, row))
         }
-    return answer*/
+    return answer
 }
 
 /**
