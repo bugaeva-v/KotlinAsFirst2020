@@ -228,7 +228,8 @@ fun kingMoveNumber(start: Square, end: Square): Int = when {
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun kingTrajectory(start: Square, end: Square): List<Square> {
-    var column = start.column
+    TODO()
+    /*var column = start.column
     var row = start.row
     val r: Int
     val c: Int
@@ -261,7 +262,7 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
             column += c
             answer.add(Square(column, row))
         }
-    return answer
+    return answer*/
 }
 
 /**
@@ -287,7 +288,7 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square, visited: Set<Square> = setOf()): Int {
+fun knightMoveNumber(start: Square, end: Square, visited: Set<Square> = setOf()): Int {/*
     println(visited.size)
     if (visited.isEmpty() && !start.inside()) throw IllegalArgumentException()
     if (start == end) return visited.size
@@ -303,7 +304,7 @@ fun knightMoveNumber(start: Square, end: Square, visited: Set<Square> = setOf())
         knightMoveNumber(Square(start.column + 2, start.row + 1), end, visited + start),
         knightMoveNumber(Square(start.column - 1, start.row + 2), end, visited + start),
         knightMoveNumber(Square(start.column + 1, start.row + 2), end, visited + start)
-    )
+    )*/
     TODO()
 }
 
