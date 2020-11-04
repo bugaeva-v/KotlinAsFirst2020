@@ -137,7 +137,7 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNum
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
 fun bishopMoveNumber(start: Square, end: Square): Int = when {
-    !start.inside() || !end.inside() || start == end -> throw IllegalArgumentException()
+    !start.inside() || !end.inside() -> throw IllegalArgumentException()
     start == end -> 0
     start.column % 2 == end.column % 2 && start.row % 2 != end.row % 2 ||
             start.column % 2 != end.column % 2 && start.row % 2 == end.row % 2 -> -1
