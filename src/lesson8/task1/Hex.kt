@@ -351,8 +351,45 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
  */
 
 fun minContainingHexagon(vararg points: HexPoint): Hexagon {
-    TODO()
-    /*if (points.isEmpty()) throw IllegalArgumentException()
+    val extreme = Array(6) { points[0] }
+//    3
+//  4/--\2
+//  5\__/1
+//    0
+    for (i in points) {
+        if (i.y < extreme[0].y) extreme[0] = i
+        if (i.x > extreme[1].x) extreme[1] = i
+        if (i.y + i.x > extreme[2].x + extreme[2].y) extreme[2] = i
+        if (i.y > extreme[3].y) extreme[3] = i
+        if (i.x < extreme[4].x) extreme[4] = i
+        if (i.y + i.x < extreme[5].x + extreme[5].y) extreme[5] = i
+    }
+    var max = 0
+    for (i in points)
+        for (j in points)
+            if (i.distance(j) > max)
+                max = i.distance(j)
+    var r = max / 2
+    while (true) {
+        for ((x, y) in extreme)
+            for (i in 0..r) {
+                val hex = arrayOf(//                           3
+                    Hexagon(HexPoint(x - i, y + r), r),//    4/--\2
+                    Hexagon(HexPoint(x - r, y + r - i), r),//5\__/1
+                    Hexagon(HexPoint(x - r + i, y - i), r),//   0
+                    Hexagon(HexPoint(x + i, y - r), r),
+                    Hexagon(HexPoint(x + r, y - r + i), r),
+                    Hexagon(HexPoint(x + r - i, y + i), r)
+                )
+                for (j in 0..5)
+                    if (points.all { hex[j].contains(it) })
+                        return hex[j]
+
+            }
+        r++
+    }
+}
+/*if (points.isEmpty()) throw IllegalArgumentException()
     val set = points.toSet()
     var x = 0
     var y = 0
@@ -405,7 +442,5 @@ fun minContainingHexagon(vararg points: HexPoint): Hexagon {
             if (set.all { Hexagon(i, r).contains(it) })
                 return Hexagon(i, r)*//*
     return Hexagon(m, 0)*/
-}
-
 
 
