@@ -349,13 +349,8 @@ fun hexagonByThreePoints(a: HexPoint, b: HexPoint, c: HexPoint): Hexagon? {
  *
  * Пример: 13, 32, 45, 18 -- шестиугольник радиусом 3 (с центром, например, в 15)
  */
-
 fun minContainingHexagon(vararg points: HexPoint): Hexagon {
     val extreme = Array(6) { points[0] }
-//    3
-//  4/--\2
-//  5\__/1
-//    0
     for (i in points) {
         if (i.y < extreme[0].y) extreme[0] = i
         if (i.x > extreme[1].x) extreme[1] = i
@@ -389,58 +384,6 @@ fun minContainingHexagon(vararg points: HexPoint): Hexagon {
         r++
     }
 }
-/*if (points.isEmpty()) throw IllegalArgumentException()
-    val set = points.toSet()
-    var x = 0
-    var y = 0
-    for (i in set) {
-        x += i.x
-        y += i.y
-    }
-    val m = HexPoint(x / set.size, y / set.size)
-    var minX = Double.POSITIVE_INFINITY.toInt()
-    var p1: HexPoint
-    var minY = Double.POSITIVE_INFINITY.toInt()
-    var p2: HexPoint
-    var maxX = Double.NEGATIVE_INFINITY.toInt()
-    var p3: HexPoint
-    var maxY = Double.NEGATIVE_INFINITY.toInt()
-    var p4: HexPoint
-    for ((x, y) in set) {
-        if (x > maxX) {
-            p1 = HexPoint(x, y)
-            maxX = x
-        } else if (x < minX) {
-            p2 = HexPoint(x, y)
-            minX = x
-        }
-        if (y > maxY) {
-            p3 = HexPoint(x, y)
-            maxY = y
-        } else if (y < minY) {
-            p4 = HexPoint(x, y)
-            minY = y
-        }
-    }
-    val max = max(maxX - minX, maxY - minY)
-    for (r in max..max * 2) {
 
-    }
-    *//*var maxDistance = 0
-    var minDistance = Double.POSITIVE_INFINITY.toInt()
-    for (i in set) {
-        if (i.distance(m) > maxDistance)
-            maxDistance = i.distance(m)
-
-        if (i.distance(m) < minDistance)
-            minDistance = i.distance(m)
-    }
-    val centers = Hexagon(m, 1).border().toMutableSet()
-    centers.add(m)
-    for (r in maxDistance / 2..maxDistance)
-        for (i in centers)
-            if (set.all { Hexagon(i, r).contains(it) })
-                return Hexagon(i, r)*//*
-    return Hexagon(m, 0)*/
 
 
