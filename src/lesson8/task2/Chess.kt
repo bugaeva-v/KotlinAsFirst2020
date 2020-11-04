@@ -48,7 +48,7 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    if (!notation.matches(Regex("""^[a-h][1-8]$"""))) throw IllegalArgumentException()
+    if (!notation.matches(Regex("""^[a-h][1-8]$"""))) throw IllegalArgumentException("Invalid input.")
     return Square(
         when (notation[0]) {
             'a' -> 1
@@ -87,6 +87,7 @@ fun square(notation: String): Square {
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
 fun rookMoveNumber(start: Square, end: Square): Int = when {
+    !start.inside() || !end.inside() -> throw IllegalArgumentException("Square is not inside.")
     start == end -> 0
     start.column == end.column || start.row == end.row -> 1
     else -> 2
@@ -136,6 +137,7 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNum
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
 fun bishopMoveNumber(start: Square, end: Square): Int = when {
+    start.inside() || end.inside() -> throw IllegalArgumentException("Square is not inside.")
     start == end -> 0
     start.column % 2 == end.column % 2 && start.row % 2 != end.row % 2 ||
             start.column % 2 != end.column % 2 && start.row % 2 == end.row % 2 -> -1
@@ -201,6 +203,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = when (bishopMov
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
 fun kingMoveNumber(start: Square, end: Square): Int = when {
+    start.inside() || end.inside() -> throw IllegalArgumentException("Square is not inside.")
     start == end -> 0
     start.row < end.row &&
             start.column + start.row <= end.row + end.column && end.column - end.row <= start.column - start.row ||
