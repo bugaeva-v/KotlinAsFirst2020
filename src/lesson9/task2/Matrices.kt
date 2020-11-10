@@ -309,7 +309,8 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
             if (lock[i, j] != key[0, 0])
                 loop@ for (ki in 0 until key.height)
                     for (kj in 0 until key.width) {
-                        if (lock[i + ki, j + kj] == key[ki, kj]) break@loop
+                        if (i + ki >= lock.height || j + kj >= lock.width || lock[i + ki, j + kj] == key[ki, kj])
+                            break@loop
                         if (ki == key.height - 1 && kj == key.width - 1)
                             return Triple(true, i, j)
                     }
