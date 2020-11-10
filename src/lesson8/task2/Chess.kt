@@ -240,8 +240,8 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
         r = -1
         c = 1
     } else if (start.row < end.row && start.column < end.column) {
-        r = -1
-        c = -1
+        r = 1
+        c = 1
     } else {
         r = 1
         c = -1
