@@ -63,7 +63,7 @@ interface Matrix<E> {
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
 fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> =
-    if (height <= 0 && width <= 0) throw IllegalArgumentException("Matrix()") else MatrixImpl(height, width, e)
+    if (height <= 0 || width <= 0) throw IllegalArgumentException("Matrix()") else MatrixImpl(height, width, e)
 
 /**
  * Средняя сложность (считается двумя задачами в 3 балла каждая)
