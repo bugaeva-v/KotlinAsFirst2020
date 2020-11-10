@@ -40,7 +40,11 @@ interface Matrix<E> {
 
     operator fun set(cell: Cell, value: E)
 
-    fun swap(a: Cell, b: Cell)
+    fun swap(a: Cell, b: Cell) {
+        val t = this[a]
+        this[a] = this[b]
+        this[b] = t
+    }
 
     fun clone(): Matrix<E> {
         val m = MatrixImpl(height, width, this[0, 0])
@@ -118,10 +122,5 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : M
         return result
     }
 
-    override fun swap(a: Cell, b: Cell) {
-        val t = this[a]
-        this[a] = this[b]
-        this[b] = t
-    }
 }
 
