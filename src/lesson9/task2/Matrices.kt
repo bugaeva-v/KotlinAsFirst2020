@@ -4,6 +4,8 @@ package lesson9.task2
 
 import lesson9.task1.*
 import java.lang.IllegalArgumentException
+import java.lang.Math.abs
+import java.util.*
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
@@ -372,6 +374,17 @@ fun findNeighbours(matrix: Matrix<Int>, position: Cell): Set<Cell> {
 }
 
 /**
+ * Возвращает расположение данного числа
+ */
+fun numPosition(matrix: Matrix<Int>, n: Int): Cell {
+    for (i in 0..3)
+        for (j in 0..3)
+            if (matrix[i, j] == n)
+                return Cell(i, j)
+    return Cell(9, 9)
+}
+
+/**
  * Очень сложная (32 балла)
  *
  * В матрице matrix размером 4х4 дана исходная позиция для игры в 15, например
@@ -410,242 +423,49 @@ fun findNeighbours(matrix: Matrix<Int>, position: Cell): Set<Cell> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-val map = mapOf(
-    1 to Cell(0, 0),
-    2 to Cell(0, 1),
-    3 to Cell(0, 2),
-    4 to Cell(0, 3),
-    5 to Cell(1, 0),
-    6 to Cell(1, 1),
-    7 to Cell(1, 2),
-    8 to Cell(1, 3),
-    9 to Cell(2, 0),
-    10 to Cell(2, 1),
-    11 to Cell(2, 2),
-    12 to Cell(2, 3),
-    13 to Cell(3, 0)
-)
 
-fun moveFor1256(matrix: Matrix<Int>, n: Int) {
-    var nullPosition = numPosition(matrix, 0)
-    var position = numPosition(matrix, n)
-    if (position != map[n]) {
-        val x = if (nullPosition.column > position.column - 1) -1 else 1
-        val y = if (nullPosition.row > position.row - 1) -1 else 1
-
-        while (nullPosition.column != position.column - 1 && nullPosition.column != position.column + 1) {
-            /*if (position == Cell(nullPosition.row, nullPosition.column + x)) {
-                matrix.swap(nullPosition, position)
-                val t = position
-                position = nullPosition
-                nullPosition = t
-                break
-            }*/
-            matrix.swap(nullPosition, Cell(nullPosition.row, nullPosition.column + x))
-        }
-        if ((nullPosition.column < position.column && position.column < map[n]!!.column
-                    || nullPosition.column > position.column && position.column > map[n]!!.column)
-        ) {
-            matrix[nullPosition] = matrix[nullPosition.row - 1, nullPosition.column]
-            matrix[nullPosition.row - 1, nullPosition.column] = matrix[position.row - 1, position.column]
-
-        }
-        while (nullPosition.row != position.row) {
-            if (position == Cell(nullPosition.row + y, nullPosition.column)) {
-                matrix.swap(nullPosition, position)
-                val t = position
-                position = nullPosition
-                nullPosition = t
-                break
-            }
-            matrix.swap(nullPosition, Cell(nullPosition.row + y, nullPosition.column))
-        }
-        while (position.column != 0) {
-            matrix[nullPosition] = matrix[position]
-            matrix[position] = matrix[position.row + 1, position.column]
-            matrix[position.row + 1, position.column] = matrix[position.row + 1, position.column - 1]
-            matrix[position.row + 1, position.column - 1] = matrix[position.row + 1, position.column - 2]
-            matrix[position.row + 1, position.column - 2] = matrix[position.row, position.column - 2]
-            matrix[position.row, position.column - 2] = 0
-            position = nullPosition
-            nullPosition = Cell(position.row, position.column - 1)
-        }
-        if (nullPosition.column == position.column + 1) {
-            matrix[nullPosition] = matrix[nullPosition.row - 1, nullPosition.column]
-            matrix[nullPosition.row - 1, nullPosition.column] = matrix[nullPosition.row - 1, nullPosition.column - 1]
-            nullPosition = Cell(position.row - 1, position.column)
-        } else {
-            TODO()
-        }
-        while (position.row != 0) {
-            matrix[nullPosition] = matrix[position]
-            matrix[position] = matrix[position.row, position.column + 1]
-            matrix[position.row, position.column + 1] = matrix[position.row - 1, position.column + 1]
-            matrix[position.row - 1, position.column + 1] = matrix[position.row - 2, position.column + 1]
-            matrix[position.row - 2, position.column + 1] = matrix[position.row - 2, position.column]
-            matrix[position.row - 2, position.column] = 0
-            position = nullPosition
-            nullPosition = Cell(position.row - 2, position.column)
-        }
-    }
+class GameState(val fieldState: Matrix<Int>, val way: List<Int>, val nullPosition: Cell) {
+    val heuristic = heuristic(fieldState)
 }
 
 fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
-    /*fun upBefore(position: Cell, expectedPosition: Cell) {
-        if (position == expectedPosition) return
-        if (nullPosition != position)
-        *//*if (position.row < expectedPosition.row)
-            if (nullPosition.row == position.row + 1)
-                if (nullPosition.column)*//*
-    }*/
-    /*var nullPosition = numPosition(matrix, 0)
-    var position = numPosition(matrix, 1)
-    if (position != Cell(0, 0)) {
-        val x = if (nullPosition.column > position.column - 1) -1 else 1
-        val y = if (nullPosition.row > position.row - 1) -1 else 1
-
-        while (nullPosition.column != position.column - 1) {
-            if (position == Cell(nullPosition.row, nullPosition.column + x)) {
-                matrix.swap(nullPosition, position)
-                val t = position
-                position = nullPosition
-                nullPosition = t
-                break
-            }
-            matrix.swap(nullPosition, Cell(nullPosition.row, nullPosition.column + x))
-        }
-        while (nullPosition.row != position.row) {
-            if (position == Cell(nullPosition.row + y, nullPosition.column)) {
-                matrix.swap(nullPosition, position)
-                val t = position
-                position = nullPosition
-                nullPosition = t
-                break
-            }
-            matrix.swap(nullPosition, Cell(nullPosition.row + y, nullPosition.column))
-        }
-        while (position.column != 0) {
-            matrix[nullPosition] = matrix[position]
-            matrix[position] = matrix[position.row + 1, position.column]
-            matrix[position.row + 1, position.column] = matrix[position.row + 1, position.column - 1]
-            matrix[position.row + 1, position.column - 1] = matrix[position.row + 1, position.column - 2]
-            matrix[position.row + 1, position.column - 2] = matrix[position.row, position.column - 2]
-            matrix[position.row, position.column - 2] = 0
-            position = nullPosition
-            nullPosition = Cell(position.row, position.column - 1)
-        }
-        if (nullPosition.column == position.column + 1) {
-            matrix[nullPosition] = matrix[nullPosition.row - 1, nullPosition.column]
-            matrix[nullPosition.row - 1, nullPosition.column] = matrix[nullPosition.row - 1, nullPosition.column - 1]
-            nullPosition = Cell(position.row - 1, position.column)
-        } else {
-            TODO()
-        }
-        while (position.row != 0) {
-            matrix[nullPosition] = matrix[position]
-            matrix[position] = matrix[position.row, position.column + 1]
-            matrix[position.row, position.column + 1] = matrix[position.row - 1, position.column + 1]
-            matrix[position.row - 1, position.column + 1] = matrix[position.row - 2, position.column + 1]
-            matrix[position.row - 2, position.column + 1] = matrix[position.row - 2, position.column]
-            matrix[position.row - 2, position.column] = 0
-            position = nullPosition
-            nullPosition = Cell(position.row - 2, position.column)
-        }
-
-
-    }*/
-    TODO()
-
-}
-
-fun numPosition(matrix: Matrix<Int>, n: Int): Cell {
-    for (i in 0..3)
-        for (j in 0..3)
-            if (matrix[i, j] == n)
-                return Cell(i, j)
-    return Cell(9, 9)
-}
-/*class Vertex(
-    var state: Pair<Matrix<Int>, Int>,
-    var previous: Int,
-    var cost: Int,
-    var heuristic: Int,
-    var marked: Boolean
-)
-
-val Neighbors = MutableList<Pair<Matrix<Int>, Int>>(4) { Pair(createMatrix(1, 1, 1), 1) }
-val L = mutableListOf<Vertex>()
-var tailIndex = 0
-
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
-    L.add(Vertex(Pair(matrix.clone(), 0), -1, 0, heuristic(matrix.clone()), false))
-    var headIndex = 0
-    tailIndex = 1
-    var c = 0
-    while (tailIndex != 0) {
-        val index = getNextIndex()
-        var v = L[index]
-        L[index].marked = true
-        println(L[index].state.first)
-
-        if (isGoal(v.state.first)) {
-            if (v.state.second == 0) return emptyList()
-            val list = mutableListOf(v.state.second)
-            while (v.previous != -1) {
-                v = L[v.previous]
-                list.add(v.state.second)
-            }
-            print(list)
-            return list
-        }
-        val N = getNeighbours(v.state.first.clone())
-        for (i in 0 until N) {
-            L.add(
-                Vertex(
-                    Pair(Neighbors[i].first.clone(), Neighbors[i].second),
-                    index,
-                    v.cost + 1,
-                    heuristic(Neighbors[i].first.clone()),
-                    false
-                )
-            )
-            tailIndex++
-        }
-        headIndex++
-    }
-    return emptyList()
-}
-
-
-fun isGoal(s: Matrix<Int>): Boolean {
-    var r = 0
+    val expected = createMatrix(4, 4, 0)
     var n = 1
-    for (i in 0..2)
+    var c = 0
+    for (i in 0..3) {
         for (j in 0..3) {
-            if (s[i, j] != n) return false
-            n++
-        }
-    if (s[3, 0] == 13 && (s[3, 1] == 14 && s[3, 2] == 15 || s[3, 1] == 15 && s[3, 2] == 14))
-        return true
-    return false
-}
-
-
-fun getNeighbours(s: Matrix<Int>): Int {
-    val nullPosition = numPosition(s.clone(), 0)
-    var index = 0
-    val di = arrayOf(-1, 0, 1, 0)
-    val dj = arrayOf(0, -1, 0, 1)
-    for (k in 0..3) {
-        val i = nullPosition.row + di[k]
-        val j = nullPosition.column + dj[k]
-        if (i >= 0 && j >= 0 && i < 4 && j < 4) {
-            Neighbors[index] = Pair(s.clone(), s[i, j])
-            Neighbors[index].first.swap(nullPosition, Cell(i, j))
-            index++
+            if (matrix[i, j] > n) {
+                c++
+            }
+            expected[i, j] = n++
         }
     }
-    return index
+    expected[3, 3] = 0
+    if ((c + numPosition(matrix, 0).row) % 2 == 0) {
+        expected[3, 2] = 14
+        expected[3, 1] = 15
+    }
+    if (matrix == expected) {
+        return emptyList()
+    }
+    val open = PriorityQueue<GameState>(compareBy { it.heuristic })
+    open.add(GameState(matrix.clone(), emptyList(), numPosition(matrix, 0)))
+    val close = mutableSetOf<Matrix<Int>>()
+    while (true) {
+        if (open.isEmpty()) throw Exception()
+        val nextState = open.poll()
+        for (i in findNeighbours(nextState.fieldState, nextState.nullPosition)) {
+            val x = nextState.fieldState.clone()
+            x.swap(nextState.nullPosition, i)
+            if (x in close) continue
+            if (nextState.fieldState == expected)
+                return nextState.way
+            val newWay = nextState.way.toMutableList()
+            newWay.add(x[nextState.nullPosition])
+            open.add(GameState(x, newWay, i))
+            close.add(x)
+        }
+    }
 }
 
 fun heuristic(s: Matrix<Int>): Int {
@@ -653,24 +473,11 @@ fun heuristic(s: Matrix<Int>): Int {
     val colOf = arrayOf(0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2)
     var r = 0
     for (i in 0..3)
-        for (j in 0..3) {
+        for (j in 0..3)
             if (s[i, j] != 0)
                 r += abs(rowOf[s[i, j] - 1] - i) + abs(colOf[s[i, j] - 1] - j)
-        }
     return r
 }
-
-fun getNextIndex(): Int {
-    var index = -1
-    var min = Double.POSITIVE_INFINITY.toInt()
-    for (i in 0 until tailIndex) {
-        if (!L[i].marked && L[i].cost + L[i].heuristic < min) {
-            index = i
-            min = L[i].cost + L[i].heuristic
-        }
-    }
-    return index
-}*/
 
 
 
