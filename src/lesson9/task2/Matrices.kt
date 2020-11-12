@@ -440,24 +440,25 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             expected[i, j] = n++
         }
     expected[3, 3] = 0
-    if ((c + numPosition(matrix, 0).row) % 2 == 0) {
-        expected[3, 2] = 14
-        expected[3, 1] = 15
-    }
-
-    if (matrix == expected) return emptyList()
+    val expected2 = expected.clone()
+    expected[3, 2] = 14
+    expected[3, 1] = 15
+//        if ((c + numPosition(matrix, 0).row) % 2 == 0) {
+//        expected[3, 2] = 14
+//        expected[3, 1] = 15
+//    }
+    if (matrix == expected || matrix == expected2) return emptyList()
     val open = PriorityQueue<GameState>(compareBy { it.heuristic })
-//    val open = mutableListOf<GameState>()
     open.add(GameState(matrix.clone(), Path(), numPosition(matrix, 0)))
     val close = mutableSetOf<Matrix<Int>>()
     while (true) {
         if (open.isEmpty()) throw Exception()
-        val nextState = open.poll()//removeAt(bestChose(open))
+        val nextState = open.poll()
         for (i in findNeighbours(nextState.fieldState, nextState.nullPosition)) {
             val x = nextState.fieldState.clone()
             x.swap(nextState.nullPosition, i)
             if (x in close) continue
-            if (nextState.fieldState == expected) {
+            if (nextState.fieldState == expected || nextState.fieldState == expected2) {
                 val way = mutableListOf<Int>()
                 var path: Path? = nextState.path
                 while (path!!.prev != null) {
@@ -467,26 +468,10 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
                 }
                 return way.reversed()
             }
-            /*val newWay = nextState.way.toMutableList()
-            newWay.add(x[nextState.nullPosition])*/
             open.add(GameState(x, Path(x[nextState.nullPosition], nextState.path), i))
             close.add(x)
         }
     }
-}
-
-/**
- * Выбирает вершину с лучшей эвристикой
- */
-fun bestChose(list: List<GameState>): Int {
-    var min = Double.POSITIVE_INFINITY.toInt()
-    var result = -1
-    for (i in 0..list.lastIndex)
-        if (list[i].heuristic < min) {
-            min = list[i].heuristic
-            result = i
-        }
-    return result
 }
 
 fun heuristic(s: Matrix<Int>): Int {
