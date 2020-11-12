@@ -233,10 +233,10 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     val r: Int
     val c: Int
     val answer = mutableListOf(Square(column, row))
-    if (start.row > end.row && start.column > end.column) {
+    if (start.row >= end.row && start.column > end.column) {
         r = -1
         c = -1
-    } else if (start.row > end.row && start.column < end.column) {
+    } else if (start.row >= end.row && start.column < end.column) {
         r = -1
         c = 1
     } else if (start.row < end.row && start.column < end.column) {
