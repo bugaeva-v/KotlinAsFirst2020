@@ -424,7 +424,9 @@ fun numPosition(matrix: Matrix<Int>, n: Int): Cell {
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
 
-class GameState(val fieldState: Matrix<Int>, val way: List<Int>, val nullPosition: Cell) {
+class Path(val current: Int = 0, val prev: Path? = null)
+
+class GameState(val fieldState: Matrix<Int>, val path: Path, val nullPosition: Cell) {
     val heuristic = heuristic(fieldState)
 }
 
@@ -432,37 +434,42 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     val expected = createMatrix(4, 4, 0)
     var n = 1
     var c = 0
-    for (i in 0..3) {
+    for (i in 0..3)
         for (j in 0..3) {
-            if (matrix[i, j] > n) {
-                c++
-            }
+            if (matrix[i, j] > n) c++
             expected[i, j] = n++
         }
-    }
     expected[3, 3] = 0
     if ((c + numPosition(matrix, 0).row) % 2 == 0) {
         expected[3, 2] = 14
         expected[3, 1] = 15
     }
-    if (matrix == expected) {
-        return emptyList()
-    }
-    val open = mutableListOf<GameState>()
-    open.add(GameState(matrix.clone(), emptyList(), numPosition(matrix, 0)))
+
+    if (matrix == expected) return emptyList()
+    val open = PriorityQueue<GameState>(compareBy { it.heuristic })
+//    val open = mutableListOf<GameState>()
+    open.add(GameState(matrix.clone(), Path(), numPosition(matrix, 0)))
     val close = mutableSetOf<Matrix<Int>>()
     while (true) {
         if (open.isEmpty()) throw Exception()
-        val nextState = open.removeAt(bestChose(open))
+        val nextState = open.poll()//removeAt(bestChose(open))
         for (i in findNeighbours(nextState.fieldState, nextState.nullPosition)) {
             val x = nextState.fieldState.clone()
             x.swap(nextState.nullPosition, i)
             if (x in close) continue
-            if (nextState.fieldState == expected)
-                return nextState.way
-            val newWay = nextState.way.toMutableList()
-            newWay.add(x[nextState.nullPosition])
-            open.add(GameState(x, newWay, i))
+            if (nextState.fieldState == expected) {
+                val way = mutableListOf<Int>()
+                var path: Path? = nextState.path
+                while (path!!.prev != null) {
+
+                    way.add(path.current)
+                    path = path.prev
+                }
+                return way.reversed()
+            }
+            /*val newWay = nextState.way.toMutableList()
+            newWay.add(x[nextState.nullPosition])*/
+            open.add(GameState(x, Path(x[nextState.nullPosition], nextState.path), i))
             close.add(x)
         }
     }
@@ -474,12 +481,11 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
 fun bestChose(list: List<GameState>): Int {
     var min = Double.POSITIVE_INFINITY.toInt()
     var result = -1
-    for (i in 0..list.lastIndex) {
+    for (i in 0..list.lastIndex)
         if (list[i].heuristic < min) {
             min = list[i].heuristic
             result = i
         }
-    }
     return result
 }
 
