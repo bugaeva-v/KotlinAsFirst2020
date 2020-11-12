@@ -448,12 +448,12 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
     if (matrix == expected) {
         return emptyList()
     }
-    val open = PriorityQueue<GameState>(compareBy { it.heuristic })
+    val open = mutableListOf<GameState>()
     open.add(GameState(matrix.clone(), emptyList(), numPosition(matrix, 0)))
     val close = mutableSetOf<Matrix<Int>>()
     while (true) {
         if (open.isEmpty()) throw Exception()
-        val nextState = open.poll()
+        val nextState = open.removeAt(bestChose(open))
         for (i in findNeighbours(nextState.fieldState, nextState.nullPosition)) {
             val x = nextState.fieldState.clone()
             x.swap(nextState.nullPosition, i)
@@ -466,6 +466,21 @@ fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
             close.add(x)
         }
     }
+}
+
+/**
+ * Выбирает вершину с лучшей эвристикой
+ */
+fun bestChose(list: List<GameState>): Int {
+    var min = Double.POSITIVE_INFINITY.toInt()
+    var result = -1
+    for (i in 0..list.lastIndex) {
+        if (list[i].heuristic < min) {
+            min = list[i].heuristic
+            result = i
+        }
+    }
+    return result
 }
 
 fun heuristic(s: Matrix<Int>): Int {
