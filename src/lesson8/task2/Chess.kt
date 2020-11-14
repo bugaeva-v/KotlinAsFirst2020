@@ -26,20 +26,12 @@ data class Square(val column: Int, val row: Int) {
      * В нотации, колонки обозначаются латинскими буквами от a до h, а ряды -- цифрами от 1 до 8.
      * Для клетки не в пределах доски вернуть пустую строку
      */
-    fun notation(): String {
-        if (!inside()) return ""
-        return when (column) {
-            1 -> 'a'
-            2 -> 'b'
-            3 -> 'c'
-            4 -> 'd'
-            5 -> 'e'
-            6 -> 'f'
-            7 -> 'g'
-            else -> 'h'
-        } + row.toString()
-    }
+    fun notation(): String =
+        if (!inside()) ""
+        else (column + 96).toChar() + row.toString()
+
 }
+
 
 /**
  * Простая (2 балла)
@@ -48,21 +40,10 @@ data class Square(val column: Int, val row: Int) {
  * В нотации, колонки обозначаются латинскими буквами от a до h, а ряды -- цифрами от 1 до 8.
  * Если нотация некорректна, бросить IllegalArgumentException
  */
-fun square(notation: String): Square {
+fun square(notation: String): Square =
     if (!notation.matches(Regex("""^[a-h][1-8]$"""))) throw IllegalArgumentException()
-    return Square(
-        when (notation[0]) {
-            'a' -> 1
-            'b' -> 2
-            'c' -> 3
-            'd' -> 4
-            'e' -> 5
-            'f' -> 6
-            'g' -> 7
-            else -> 8
-        }, notation[1].toString().toInt()
-    )
-}
+    else Square(notation[0].toInt() - 96, notation[1].toInt() - 48)
+
 
 /**
  * Простая (2 балла)
@@ -140,8 +121,7 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNum
 fun bishopMoveNumber(start: Square, end: Square): Int = when {
     !start.inside() || !end.inside() -> throw IllegalArgumentException()
     start == end -> 0
-    start.column % 2 == end.column % 2 && start.row % 2 != end.row % 2 ||
-            start.column % 2 != end.column % 2 && start.row % 2 == end.row % 2 -> -1
+    (start.column % 2 == end.column % 2) xor (start.row % 2 == end.row % 2) -> -1
     abs(start.column - end.column) == abs(start.row - end.row) -> 1
     else -> 2
 }
@@ -168,19 +148,19 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = when (bishopMov
     -1 -> listOf()
     0 -> listOf(start)
     1 -> listOf(start, end)
-    else -> listOf(
-        start,
-        if (start.column + (end.column + end.row - start.column - start.row) / 2 <= 8 &&
-            start.row + (end.column + end.row - start.column - start.row) / 2 <= 8
-        ) Square(
-            start.column + (end.column + end.row - start.column - start.row) / 2,
-            start.row + (end.column + end.row - start.column - start.row) / 2
-        ) else Square(
-            end.column - abs(end.column + end.row - start.column - start.row) / 2,
-            end.row - abs(end.column + end.row - start.column - start.row) / 2
-        ),
-        end
-    )
+    else -> {
+        val column = start.column + (end.column + end.row - start.column - start.row) / 2
+        val row = start.row + (end.column + end.row - start.column - start.row) / 2
+        listOf(
+            start,
+            if (column <= 8 && row <= 8) Square(column, row)
+            else Square(
+                end.column - abs(end.column + end.row - start.column - start.row) / 2,
+                end.row - abs(end.column + end.row - start.column - start.row) / 2
+            ),
+            end
+        )
+    }
 }
 
 /**
@@ -205,7 +185,6 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = when (bishopMov
  */
 fun kingMoveNumber(start: Square, end: Square): Int = when {
     !start.inside() || !end.inside() -> throw IllegalArgumentException()
-    start == end -> 0
     start.row < end.row &&
             start.column + start.row <= end.row + end.column && end.column - end.row <= start.column - start.row ||
             start.row > end.row &&
@@ -231,22 +210,9 @@ fun kingMoveNumber(start: Square, end: Square): Int = when {
 fun kingTrajectory(start: Square, end: Square): List<Square> {
     var column = start.column
     var row = start.row
-    val r: Int
-    val c: Int
     val answer = mutableListOf(Square(column, row))
-    if (start.row >= end.row && start.column >= end.column) {
-        r = -1
-        c = -1
-    } else if (start.row >= end.row && start.column <= end.column) {
-        r = -1
-        c = 1
-    } else if (start.row < end.row && start.column < end.column) {
-        r = 1
-        c = 1
-    } else {
-        r = 1
-        c = -1
-    }
+    val r: Int = end.row.compareTo(start.row)
+    val c: Int = end.column.compareTo(start.column)
     while (column != end.column && row != end.row) {
         row += r
         column += c
@@ -291,23 +257,27 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
 class Path(val current: Square = Square(0, 0), val prev: Path? = null)
 
 class Vertex(var sqr: Square, var path: Path = Path()) {
-    var neighbors: Set<Square>
+    var neighbors: List<Square>
 
     init {
         neighbors = getPossibleMovements()
     }
 
-    private fun getPossibleMovements(): Set<Square> {
-        val set = mutableSetOf<Square>()
-        if (Square(sqr.column + 2, sqr.row + 1).inside()) set.add(Square(sqr.column + 2, sqr.row + 1))
-        if (Square(sqr.column + 2, sqr.row - 1).inside()) set.add(Square(sqr.column + 2, sqr.row - 1))
-        if (Square(sqr.column + 1, sqr.row - 2).inside()) set.add(Square(sqr.column + 1, sqr.row - 2))
-        if (Square(sqr.column - 1, sqr.row - 2).inside()) set.add(Square(sqr.column - 1, sqr.row - 2))
-        if (Square(sqr.column + 1, sqr.row + 2).inside()) set.add(Square(sqr.column + 1, sqr.row + 2))
-        if (Square(sqr.column - 1, sqr.row + 2).inside()) set.add(Square(sqr.column - 1, sqr.row + 2))
-        if (Square(sqr.column - 2, sqr.row + 1).inside()) set.add(Square(sqr.column - 2, sqr.row + 1))
-        if (Square(sqr.column - 2, sqr.row - 1).inside()) set.add(Square(sqr.column - 2, sqr.row - 1))
-        return set
+    private fun getPossibleMovements(): List<Square> {
+        val list = mutableListOf(
+            Square(sqr.column + 2, sqr.row + 1),
+            Square(sqr.column + 2, sqr.row - 1),
+            Square(sqr.column + 1, sqr.row - 2),
+            Square(sqr.column - 1, sqr.row - 2),
+            Square(sqr.column + 1, sqr.row + 2),
+            Square(sqr.column - 1, sqr.row + 2),
+            Square(sqr.column - 2, sqr.row + 1),
+            Square(sqr.column - 2, sqr.row - 1)
+        )
+        for (i in 7 downTo 0)
+            if (!list[i].inside())
+                list.removeAt(i)
+        return list
     }
 }
 

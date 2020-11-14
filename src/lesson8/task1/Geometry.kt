@@ -82,12 +82,8 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double {
-        val distance = center.distance(other.center)
-        return if (distance < radius + other.radius) 0.0
-        else distance - radius - other.radius
-
-    }
+    fun distance(other: Circle): Double =
+        max(0.0, center.distance(other.center) - radius - other.radius)
 
     /**
      * Тривиальная (1 балл)
@@ -106,6 +102,8 @@ data class Segment(val begin: Point, val end: Point) {
 
     override fun hashCode() =
         begin.hashCode() + end.hashCode()
+
+    fun madium(): Point = Point((begin.x + end.x) / 2, (begin.y + end.y) / 2)
 }
 
 /**
@@ -138,7 +136,7 @@ fun diameter(vararg points: Point): Segment {
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
 fun circleByDiameter(diameter: Segment): Circle = Circle(
-    Point((diameter.begin.x + diameter.end.x) / 2, (diameter.begin.y + diameter.end.y) / 2),
+    diameter.madium(),
     diameter.begin.distance(diameter.end) / 2
 )
 
@@ -203,9 +201,8 @@ fun lineByPoints(a: Point, b: Point): Line = Line(
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
     val line = lineByPoints(a, b)
-    val pointMedian = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     val angle = abs(line.angle + PI / 2) % PI
-    return Line(pointMedian, angle)
+    return Line(Segment(a, b).madium(), angle)
 }
 
 /**
@@ -272,27 +269,28 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 1) return Circle(points[0], 0.0)
     val open = points.toMutableSet()
     val close = mutableSetOf<Point>()
-    val segment = longest(*points)
-    var p1 = segment.begin
-    open.remove(p1)
-    close.add(p1)
-    var p2 = segment.end
-    open.remove(p2)
-    close.add(p2)
-    var p3 = false
+
+    fun newPoint(point: Point): Point {
+        open.remove(point)
+        close.add(point)
+        return point
+    }
+
+    val segment = diameter(*points)
+    var p1 = newPoint(segment.begin)
+    var p2 = newPoint(segment.end)
+    var useThirdPoint = false
     var circle = circleByDiameter(Segment(p1, p2))
     while (open.isNotEmpty()) {
-        val next = open.random()
-        open.remove(next)
-        close.add(next)
+        val next = newPoint(open.random())
         if (circle.contains(next))
             continue
-        val c1 = circleByDiameter(Segment(p1, next))
-        val c2 = circleByDiameter(Segment(p2, next))
-        val c3 = circleByThreePoints(p1, p2, next)
-        circle = if (p3)
+        circle = if (useThirdPoint)
             minContainingCircle(*close.toTypedArray())
-        else
+        else {
+            val c1 = circleByDiameter(Segment(p1, next))
+            val c2 = circleByDiameter(Segment(p2, next))
+            val c3 = circleByThreePoints(p1, p2, next)
             when {
                 close.all { it.insideCircle(c1) } -> {
                     p2 = next
@@ -303,30 +301,12 @@ fun minContainingCircle(vararg points: Point): Circle {
                     c2
                 }
                 close.all { it.insideCircle(c3) } -> {
-                    p3 = true
+                    useThirdPoint = true
                     c3
                 }
                 else -> minContainingCircle(*close.toTypedArray())
             }
-    }
-    for (i in close) {
-        if (!circle.contains(i))
-            println(i)
+        }
     }
     return circle
-}
-
-fun longest(vararg points: Point): Segment {
-    val list = points.toList()
-    var max = 0.0
-    var p1 = Point(0.0, 0.0)
-    var p2 = Point(0.0, 0.0)
-    for (i in 0..list.lastIndex)
-        for (j in i + 1..list.lastIndex)
-            if (list[i].distance(list[j]) > max) {
-                max = list[i].distance(list[j])
-                p1 = list[i]
-                p2 = list[j]
-            }
-    return Segment(p1, p2)
 }
