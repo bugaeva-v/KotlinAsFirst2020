@@ -103,7 +103,7 @@ data class Segment(val begin: Point, val end: Point) {
     override fun hashCode() =
         begin.hashCode() + end.hashCode()
 
-    fun madium(): Point = Point((begin.x + end.x) / 2, (begin.y + end.y) / 2)
+    fun medium(): Point = Point((begin.x + end.x) / 2, (begin.y + end.y) / 2)
 }
 
 /**
@@ -136,7 +136,7 @@ fun diameter(vararg points: Point): Segment {
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
 fun circleByDiameter(diameter: Segment): Circle = Circle(
-    diameter.madium(),
+    diameter.medium(),
     diameter.begin.distance(diameter.end) / 2
 )
 
@@ -202,7 +202,7 @@ fun lineByPoints(a: Point, b: Point): Line = Line(
 fun bisectorByPoints(a: Point, b: Point): Line {
     val line = lineByPoints(a, b)
     val angle = abs(line.angle + PI / 2) % PI
-    return Line(Segment(a, b).madium(), angle)
+    return Line(Segment(a, b).medium(), angle)
 }
 
 /**
