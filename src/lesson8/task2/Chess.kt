@@ -4,6 +4,8 @@ package lesson8.task2
 
 import kotlin.math.abs
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
 
 /**
@@ -183,15 +185,9 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = when (bishopMov
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int = when {
-    !start.inside() || !end.inside() -> throw IllegalArgumentException()
-    start.row < end.row &&
-            start.column + start.row <= end.row + end.column && end.column - end.row <= start.column - start.row ||
-            start.row > end.row &&
-            start.column + start.row >= end.row + end.column && end.column - end.row >= start.column - start.row ->
-        abs(start.row - end.row)
-    else -> abs(start.column - end.column)
-}
+fun kingMoveNumber(start: Square, end: Square): Int =
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
+    else max(abs(start.row - end.row), abs(start.column - end.column))
 
 /**
  * Сложная (5 баллов)
