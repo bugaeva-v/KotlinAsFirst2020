@@ -271,10 +271,11 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.size == 1) return Circle(points[0], 0.0)
     val open = points.toMutableSet()
     val close = mutableSetOf<Point>()
-    var p1 = open.random()
+    val segment = longest(*points)
+    var p1 = segment.begin
     open.remove(p1)
     close.add(p1)
-    var p2 = open.random()
+    var p2 = segment.end
     open.remove(p2)
     close.add(p2)
     var p3 = false
@@ -311,8 +312,20 @@ fun minContainingCircle(vararg points: Point): Circle {
         if (!circle.contains(i))
             println(i)
     }
-    if (close.size == points.toSet().size) print(1)
-    if (close.any { !it.insideCircle(circle) }) throw Exception("$p3")
     return circle
 }
 
+fun longest(vararg points: Point): Segment {
+    val list = points.toList()
+    var max = 0.0
+    var p1 = Point(0.0, 0.0)
+    var p2 = Point(0.0, 0.0)
+    for (i in 0..list.lastIndex)
+        for (j in i + 1..list.lastIndex)
+            if (list[i].distance(list[j]) > max) {
+                max = list[i].distance(list[j])
+                p1 = list[i]
+                p2 = list[j]
+            }
+    return Segment(p1, p2)
+}
