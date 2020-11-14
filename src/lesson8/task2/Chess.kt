@@ -211,23 +211,20 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     var column = start.column
     var row = start.row
     val answer = mutableListOf(Square(column, row))
-    val r: Int = end.row.compareTo(start.row)
-    val c: Int = end.column.compareTo(start.column)
+    var r = end.row.compareTo(start.row)
+    var c = end.column.compareTo(start.column)
     while (column != end.column && row != end.row) {
         row += r
         column += c
         answer.add(Square(column, row))
     }
-    if (column == end.column)
-        while (row != end.row) {
-            row += r
-            answer.add(Square(column, row))
-        }
-    else
-        while (column != end.column) {
-            column += c
-            answer.add(Square(column, row))
-        }
+    if (row == end.row) r = 0
+    if (column == end.column) c = 0
+    while (row != end.row || column != end.column) {
+        row += r
+        column += c
+        answer.add(Square(column, row))
+    }
     return answer
 }
 
