@@ -29,7 +29,6 @@ class HexTests {
     }
 
     @Test
-    @Tag(" ")
     fun hexagonBorder() {
         assertEquals(
             setOf(

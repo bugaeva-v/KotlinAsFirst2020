@@ -19,6 +19,8 @@ data class Point(val x: Double, val y: Double) {
      * Рассчитать (по известной формуле) расстояние между двумя точками
      */
     fun distance(other: Point): Double = sqrt(sqr(x - other.x) + sqr(y - other.y))
+
+    fun insideCircle(c: Circle): Boolean = c.center.distance(this) <= c.radius
 }
 
 /**
@@ -263,7 +265,48 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
+
 fun minContainingCircle(vararg points: Point): Circle {
-    TODO()
+    if (points.isEmpty()) throw  IllegalArgumentException()
+    if (points.size == 1) return Circle(points[0], 0.0)
+    val open = points.toMutableSet()
+    val close = mutableSetOf<Point>()
+    var p1 = open.random()
+    open.remove(p1)
+    close.add(p1)
+    var p2 = open.random()
+    open.remove(p2)
+    close.add(p2)
+    var p3 = false
+    var circle = circleByDiameter(Segment(p1, p2))
+    while (open.isNotEmpty()) {
+        val next = open.random()
+        open.remove(next)
+        if (circle.contains(next))
+            continue
+        val c1 = circleByDiameter(Segment(p1, next))
+        val c2 = circleByDiameter(Segment(p2, next))
+        val c3 = circleByThreePoints(p1, p2, next)
+        circle = if (p3)
+            minContainingCircle(*close.toTypedArray())
+        else
+            when {
+                close.all { it.insideCircle(c1) } -> {
+                    p2 = next
+                    c1
+                }
+                close.all { it.insideCircle(c2) } -> {
+                    p1 = next
+                    c2
+                }
+                close.all { it.insideCircle(c3) } -> {
+                    p3 = true
+                    c3
+                }
+                else -> minContainingCircle(*close.toTypedArray())
+            }
+        close.add(next)
+    }
+    return circle
 }
 

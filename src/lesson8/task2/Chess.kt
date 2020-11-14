@@ -2,8 +2,9 @@
 
 package lesson8.task2
 
-import lesson4.task1.abs
 import kotlin.math.abs
+import java.util.*
+
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -287,24 +288,44 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square, visited: Set<Square> = setOf()): Int {/*
-    println(visited.size)
-    if (visited.isEmpty() && !start.inside()) throw IllegalArgumentException()
-    if (start == end) return visited.size
-    if (!start.inside()) return Double.POSITIVE_INFINITY.toInt()
-    if (start in visited) return Double.POSITIVE_INFINITY.toInt()
-    println(start)
-    return minOf(
-        knightMoveNumber(Square(start.column - 1, start.row - 2), end, visited + start),
-        knightMoveNumber(Square(start.column + 1, start.row - 2), end, visited + start),
-        knightMoveNumber(Square(start.column - 2, start.row - 1), end, visited + start),
-        knightMoveNumber(Square(start.column + 2, start.row - 1), end, visited + start),
-        knightMoveNumber(Square(start.column - 2, start.row + 1), end, visited + start),
-        knightMoveNumber(Square(start.column + 2, start.row + 1), end, visited + start),
-        knightMoveNumber(Square(start.column - 1, start.row + 2), end, visited + start),
-        knightMoveNumber(Square(start.column + 1, start.row + 2), end, visited + start)
-    )*/
-    TODO()
+class Path(val current: Square = Square(0, 0), val prev: Path? = null)
+
+class Vertex(var sqr: Square, var path: Path = Path()) {
+    var neighbors: Set<Square>
+
+    init {
+        neighbors = getPossibleMovements()
+    }
+
+    private fun getPossibleMovements(): Set<Square> {
+        val set = mutableSetOf<Square>()
+        if (Square(sqr.column + 2, sqr.row + 1).inside()) set.add(Square(sqr.column + 2, sqr.row + 1))
+        if (Square(sqr.column + 2, sqr.row - 1).inside()) set.add(Square(sqr.column + 2, sqr.row - 1))
+        if (Square(sqr.column + 1, sqr.row - 2).inside()) set.add(Square(sqr.column + 1, sqr.row - 2))
+        if (Square(sqr.column - 1, sqr.row - 2).inside()) set.add(Square(sqr.column - 1, sqr.row - 2))
+        if (Square(sqr.column + 1, sqr.row + 2).inside()) set.add(Square(sqr.column + 1, sqr.row + 2))
+        if (Square(sqr.column - 1, sqr.row + 2).inside()) set.add(Square(sqr.column - 1, sqr.row + 2))
+        if (Square(sqr.column - 2, sqr.row + 1).inside()) set.add(Square(sqr.column - 2, sqr.row + 1))
+        if (Square(sqr.column - 2, sqr.row - 1).inside()) set.add(Square(sqr.column - 2, sqr.row - 1))
+        return set
+    }
+}
+
+fun knightMoveNumber(start: Square, end: Square): Int? {
+    val queue = ArrayDeque<Square>()
+    queue.add(start)
+    val visited = mutableMapOf(start to 0)
+    while (queue.isNotEmpty()) {
+        val next = queue.poll()
+        val distance = visited[next]!!
+        if (next == end) return distance
+        for (neighbor in Vertex(next).neighbors) {
+            if (neighbor in visited) continue
+            visited[neighbor] = distance + 1
+            queue.add(neighbor)
+        }
+    }
+    return -1
 }
 
 /**
@@ -327,4 +348,31 @@ fun knightMoveNumber(start: Square, end: Square, visited: Set<Square> = setOf())
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+
+fun knightTrajectory(start: Square, end: Square): List<Square> {
+    val queue = ArrayDeque<Vertex>()
+    queue.add(Vertex(start, Path(start, null)))
+    val visited = mutableMapOf(start to 0)
+    if (start == end)
+        return listOf(start)
+    while (queue.isNotEmpty()) {
+        val next = queue.poll()
+        val distance = visited[next.sqr]!!
+        if (next.sqr == end) {
+            val list = mutableListOf<Square>()
+            var path: Path? = next.path
+            while (path!!.prev != null) {
+                list.add(path.current)
+                path = path.prev
+            }
+            list.add(path.current)
+            return list.reversed()
+        }
+        for (neighbor in next.neighbors) {
+            if (neighbor in visited) continue
+            visited[neighbor] = distance + 1
+            queue.add(Vertex(neighbor, Path(neighbor, next.path)))
+        }
+    }
+    return emptyList()
+}
