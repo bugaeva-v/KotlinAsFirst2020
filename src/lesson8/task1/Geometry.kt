@@ -282,6 +282,7 @@ fun minContainingCircle(vararg points: Point): Circle {
     while (open.isNotEmpty()) {
         val next = open.random()
         open.remove(next)
+        close.add(next)
         if (circle.contains(next))
             continue
         val c1 = circleByDiameter(Segment(p1, next))
@@ -305,8 +306,13 @@ fun minContainingCircle(vararg points: Point): Circle {
                 }
                 else -> minContainingCircle(*close.toTypedArray())
             }
-        close.add(next)
     }
+    for (i in close) {
+        if (!circle.contains(i))
+            println(i)
+    }
+    if (close.size == points.toSet().size) print(1)
+    if (close.any { !it.insideCircle(circle) }) throw Exception("$p3")
     return circle
 }
 

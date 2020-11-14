@@ -312,6 +312,7 @@ class Vertex(var sqr: Square, var path: Path = Path()) {
 }
 
 fun knightMoveNumber(start: Square, end: Square): Int? {
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
     val queue = ArrayDeque<Square>()
     queue.add(start)
     val visited = mutableMapOf(start to 0)
