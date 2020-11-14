@@ -266,6 +266,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * соединяющий две самые удалённые точки в данном множестве.
  */
 
+
 fun minContainingCircle(vararg points: Point): Circle {
     if (points.isEmpty()) throw  IllegalArgumentException()
     if (points.size == 1) return Circle(points[0], 0.0)
