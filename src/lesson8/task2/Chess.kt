@@ -5,7 +5,6 @@ package lesson8.task2
 import kotlin.math.abs
 import java.util.*
 import kotlin.math.max
-import kotlin.math.min
 
 
 /**
@@ -250,27 +249,25 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
 class Path(val current: Square = Square(0, 0), val prev: Path? = null)
 
 class Vertex(var sqr: Square, var path: Path = Path()) {
-    var neighbors: List<Square>
+    var neighbors: Set<Square>
 
     init {
         neighbors = getPossibleMovements()
     }
 
-    private fun getPossibleMovements(): List<Square> {
-        val list = mutableListOf(
-            Square(sqr.column + 2, sqr.row + 1),
-            Square(sqr.column + 2, sqr.row - 1),
-            Square(sqr.column + 1, sqr.row - 2),
-            Square(sqr.column - 1, sqr.row - 2),
-            Square(sqr.column + 1, sqr.row + 2),
-            Square(sqr.column - 1, sqr.row + 2),
-            Square(sqr.column - 2, sqr.row + 1),
-            Square(sqr.column - 2, sqr.row - 1)
-        )
-        for (i in 7 downTo 0)
-            if (!list[i].inside())
-                list.removeAt(i)
-        return list
+    private fun getPossibleMovements(): Set<Square> {
+        val set = mutableSetOf<Square>()
+        for (i in -2..2)
+            if (i != 0) {
+                val j = if (abs(i) == 2) 1 else 2
+                val squarePlus = Square(sqr.column + i, sqr.row + j)
+                val squareMinus = Square(sqr.column + i, sqr.row - j)
+                if (squarePlus.inside())
+                    set.add(squarePlus)
+                if (squareMinus.inside())
+                    set.add(squareMinus)
+            }
+        return set
     }
 }
 
