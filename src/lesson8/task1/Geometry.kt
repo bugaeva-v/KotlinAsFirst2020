@@ -113,7 +113,7 @@ data class Segment(val begin: Point, val end: Point) {
  * Если в множестве менее двух точек, бросить IllegalArgumentException
  */
 fun diameter(vararg points: Point): Segment {
-    if (points.size < 2) throw IllegalArgumentException()
+    if (points.toSet().size < 2) throw IllegalArgumentException()
     var p1 = points[0]
     var p2 = points[1]
     var distance = p1.distance(p2)
@@ -263,7 +263,6 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * соединяющий две самые удалённые точки в данном множестве.
  */
 
-
 fun minContainingCircle(vararg points: Point): Circle {
     if (points.isEmpty()) throw  IllegalArgumentException()
     if (points.size == 1) return Circle(points[0], 0.0)
@@ -276,37 +275,41 @@ fun minContainingCircle(vararg points: Point): Circle {
         return point
     }
 
-    val segment = diameter(*points)
-    var p1 = newPoint(segment.begin)
-    var p2 = newPoint(segment.end)
-    var useThirdPoint = false
+    val p1 = newPoint(open.random())
+    val p2 = newPoint(open.random())
     var circle = circleByDiameter(Segment(p1, p2))
     while (open.isNotEmpty()) {
-        val next = newPoint(open.random())
-        if (circle.contains(next))
-            continue
-        circle = if (useThirdPoint)
-            minContainingCircle(*close.toTypedArray())
-        else {
-            val c1 = circleByDiameter(Segment(p1, next))
-            val c2 = circleByDiameter(Segment(p2, next))
-            val c3 = circleByThreePoints(p1, p2, next)
-            when {
-                close.all { it.insideCircle(c1) } -> {
-                    p2 = next
-                    c1
-                }
-                close.all { it.insideCircle(c2) } -> {
-                    p1 = next
-                    c2
-                }
-                close.all { it.insideCircle(c3) } -> {
-                    useThirdPoint = true
-                    c3
-                }
-                else -> minContainingCircle(*close.toTypedArray())
-            }
-        }
+        val next = open.random()
+        open.remove(next)
+        if (!circle.contains(next))
+            circle = minCircleWith1Point(next, close)
+        close.add(next)
+    }
+    return circle
+}
+
+fun minCircleWith1Point(p: Point, s: Set<Point>): Circle {
+    val open = s.toMutableSet()
+    val close = mutableSetOf<Point>()
+    val p1 = open.random()
+    open.remove(p1)
+    close.add(p1)
+    var circle = circleByDiameter(Segment(p, p1))
+    while (open.isNotEmpty()) {
+        val next = open.random()
+        open.remove(next)
+        if (!circle.contains(next))
+            circle = minCircleWith2Point(next, p, close)
+        close.add(next)
+    }
+    return circle
+}
+
+fun minCircleWith2Point(p1: Point, p2: Point, s: Set<Point>): Circle {
+    var circle = circleByDiameter(Segment(p1, p2))
+    for (i in s) {
+        if (!i.insideCircle(circle))
+            circle = circleByThreePoints(i, p1, p2)
     }
     return circle
 }

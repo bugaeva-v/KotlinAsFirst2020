@@ -29,7 +29,7 @@ data class Square(val column: Int, val row: Int) {
      */
     fun notation(): String =
         if (!inside()) ""
-        else (column + 96).toChar() + row.toString()
+        else (column + 'a'.toInt() - 1).toChar() + row.toString()
 
 }
 
@@ -43,7 +43,7 @@ data class Square(val column: Int, val row: Int) {
  */
 fun square(notation: String): Square =
     if (!notation.matches(Regex("""^[a-h][1-8]$"""))) throw IllegalArgumentException()
-    else Square(notation[0].toInt() - 96, notation[1].toInt() - 48)
+    else Square(notation[0].toInt() - 'a'.toInt() + 1, notation[1].toInt() - '1'.toInt() + 1)
 
 
 /**
