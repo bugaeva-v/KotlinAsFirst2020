@@ -38,6 +38,7 @@ internal class TableFunctionTest {
         assertTrue(function.remove(4.0))
         assertFalse(function.remove(4.0))
         assertEquals(3, function.size)
+
     }
 
     @Test
