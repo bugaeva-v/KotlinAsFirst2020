@@ -12,10 +12,13 @@ internal class TableFunctionTest {
     fun add() {
         val function = TableFunction()
         function.add(1.0, 2.0)
-        function.add(3.0, 4.0)
+        function.add(2.5, 2.0)
+        function.add(2.70, 2.0)
+        function.add(6.0, 2.0)
         assertTrue(function.add(5.0, 6.0))
+        function.add(3.0, 4.0)
         assertFalse(function.add(5.0, 7.0))
-        assertEquals(3, function.size)
+        assertEquals(6, function.size)
     }
 
     @Test
@@ -24,9 +27,17 @@ internal class TableFunctionTest {
         val function = TableFunction()
         function.add(1.0, 2.0)
         function.add(3.0, 4.0)
+        function.add(4.0, 4.0)
+        function.add(5.0, 4.0)
+        function.add(6.0, 4.0)
+        function.add(7.0, 4.0)
         assertTrue(function.remove(1.0))
         assertFalse(function.remove(1.0))
-        assertEquals(1, function.size)
+        assertTrue(function.remove(7.0))
+        assertFalse(function.remove(7.0))
+        assertTrue(function.remove(4.0))
+        assertFalse(function.remove(4.0))
+        assertEquals(3, function.size)
     }
 
     @Test
@@ -46,21 +57,15 @@ internal class TableFunctionTest {
         function.add(1.0, 2.0)
         function.add(3.0, 4.0)
         function.add(5.0, 6.0)
-        assertEquals(5.0 to 6.0, function.findPair(5.75))
-        assertEquals(1.0 to 2.0, function.findPair(1.5))
+        assertEquals(5.0 to 6.0, function.findPair(6.75))
+        assertEquals(1.0 to 2.0, function.findPair(0.0))
     }
 
     @Test
     @Tag("10")
     fun getValue() {
         val function = TableFunction()
-        try {
-            function.getValue(0.0)
-        } catch (ex: IllegalArgumentException) {
-            // pass
-        } catch (ex: NotImplementedError) {
-            throw ex
-        }
+        assertThrows(IllegalStateException::class.java) { function.getValue(0.0) }
         function.add(1.0, 2.0)
         assertEquals(2.0, function.getValue(1.5))
         function.add(3.0, 4.0)
