@@ -45,9 +45,18 @@ internal class TableFunctionTest {
     fun getPairs() {
         val function = TableFunction()
         function.add(1.0, 2.0)
-        val pairs = function.getPairs()
+        var pairs = function.getPairs()
         assertEquals(1, pairs.size)
         assertEquals(1.0 to 2.0, pairs.single())
+        function.add(0.0, 4.0)
+        function.add(6.0, 3.0)
+        function.add(7.0, 3.0)
+        function.add(6.5, 2.0)
+        function.add(3.0, 5.0)
+        val list = listOf(0.0 to 4.0, 1.0 to 2.0, 3.0 to 5.0, 6.0 to 3.0, 6.5 to 2.0, 7.0 to 3.0)
+        pairs = function.getPairs()
+        assertEquals(list.size, pairs.size)
+        assertTrue(pairs.containsAll(list))
     }
 
     @Test
