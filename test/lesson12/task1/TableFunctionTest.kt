@@ -68,10 +68,17 @@ internal class TableFunctionTest {
         assertThrows(IllegalStateException::class.java) { function.getValue(0.0) }
         function.add(1.0, 2.0)
         assertEquals(2.0, function.getValue(1.5))
+        assertEquals(2.0, function.getValue(0.5))
         function.add(3.0, 4.0)
         function.add(5.0, 6.0)
         assertEquals(5.0, function.getValue(4.0), 1e-10)
         assertEquals(0.0, function.getValue(-1.0), 1e-10)
+        assertEquals(3.0, function.getValue(2.0), 1e-10)
+        assertEquals(7.0, function.getValue(6.0), 1e-10)
+        function.add(6.6, 9.0)
+        function.add(6.0, 7.0)
+        function.add(6.4, 8.0)
+        assertEquals(7.25, function.getValue(6.1), 1e-10)
     }
 
     @Test
