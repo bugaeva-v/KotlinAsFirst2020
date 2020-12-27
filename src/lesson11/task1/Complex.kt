@@ -3,8 +3,6 @@
 package lesson11.task1
 
 import java.lang.Integer.max
-import kotlin.math.abs
-import kotlin.math.pow
 
 /**
  * Класс "комплексное число".
@@ -15,40 +13,12 @@ import kotlin.math.pow
  *
  * Аргументы конструктора -- вещественная и мнимая часть числа.
  */
-class Complex(re: Double, im: Double) {
-    var re: Double
-    var im: Double
-
-    init {
-        this.re = re
-        this.im = im
-    }
+class Complex(var re: Double, var im: Double) {
 
     /**
      * Конструктор из вещественного числа
      */
     constructor(x: Double) : this(x, 0.0)
-
-    /**
-     * Конструктор из строки вида x+yi
-     */
-    constructor(s: String) : this(re = 0.0, im = 0.0) {
-        when {
-            s.matches(Regex("""^-?\d+(\.\d+)*$""")) ->
-                re = s.toDouble()
-            s.matches(Regex("""^-?\d+(\.\d+)*i$""")) ->
-                im = s.substring(0 until s.lastIndex).toDouble()
-            s.matches(Regex("""^-?\d+(\.\d+)*[+-]\d+(\.\d+)*i$""")) -> {
-                val i = max(s.indexOf('+', 1), s.indexOf('-', 1))
-                var str = s.substring(0 until i)
-                re = str.toDouble()
-                str = s.substring(i until s.lastIndex)
-                im = str.toDouble()
-            }
-            else -> throw IllegalStateException("illegal notation")
-        }
-    }
-
 
     /**
      * Сложение.
@@ -93,4 +63,27 @@ class Complex(re: Double, im: Double) {
         result = 31 * result + im.hashCode()
         return result
     }
+}
+
+/**
+ * Имитация конструктора из строки вида x+yi
+ */
+fun Complex(s: String): Complex {
+    var re = 0.0
+    var im = 0.0
+    when {
+        s.matches(Regex("""^-?\d+(\.\d+)*$""")) ->
+            re = s.toDouble()
+        s.matches(Regex("""^-?\d+(\.\d+)*i$""")) ->
+            im = s.substring(0 until s.lastIndex).toDouble()
+        s.matches(Regex("""^-?\d+(\.\d+)*[+-]\d+(\.\d+)*i$""")) -> {
+            val i = max(s.indexOf('+', 1), s.indexOf('-', 1))
+            var str = s.substring(0 until i)
+            re = str.toDouble()
+            str = s.substring(i until s.lastIndex)
+            im = str.toDouble()
+        }
+        else -> throw IllegalStateException("illegal notation")
+    }
+    return Complex(re, im)
 }

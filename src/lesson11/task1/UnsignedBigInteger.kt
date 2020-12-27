@@ -14,7 +14,7 @@ import lesson3.task1.digitNumber
  * сравнение на равенство и неравенство
  */
 class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
-    var array = ByteArray(0)
+    val array: ByteArray
 
     /**
      * Конструктор из строки
@@ -37,7 +37,7 @@ class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
         var j = str.lastIndex
         for (i in 0..str.lastIndex)
             array[j--] = str[i].toString().toByte()
-        if (reverse) array = array.reversedArray()
+        if (reverse) array.reverse()
     }
 
     /**

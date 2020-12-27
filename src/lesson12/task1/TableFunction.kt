@@ -2,6 +2,8 @@
 
 package lesson12.task1
 
+import kotlin.math.abs
+
 /**
  * Класс "табличная функция".
  *
@@ -14,23 +16,13 @@ package lesson12.task1
  * Класс должен иметь конструктор по умолчанию (без параметров).
  */
 class TableFunction {
-    private var start: Point? = null
-
     /**
      * Количество пар в таблице
      */
     val size: Int
-        get() {
-            var current = start
-            var result = 0
-            while (current != null) {
-                current = current.next
-                result++
-            }
-            return result
-        }
+        get() = array.size
 
-    private class Point(val x: Double, var y: Double, var next: Point? = null)
+    private val array = mutableListOf<Pair<Double, Double>>()
 
     /**
      * Добавить новую пару.
@@ -38,40 +30,15 @@ class TableFunction {
      * или false, если она уже есть (в этом случае перезаписать значение y)
      */
     fun add(x: Double, y: Double): Boolean {
-        if (start == null) start = Point(x, y)
-        else {
-            var current = start
-            var prev: Point? = null
-            while (current?.next != null && current.x < x) {
-                prev = current
-                current = current.next
-            }
-            when {
-                current!!.next == null -> {
-                    if (current.x == x) {
-                        current.y = y
-                        return false
-                    } else if (current.x > x) {
-                        if (prev == null)
-                            start = Point(x, y, current)
-                        else
-                            prev.next = Point(x, y, current)
-                    } else
-                        current.next = Point(x, y)
-                }
-                current.x == x -> {
-                    current.y = y
-                    return false
-                }
-                else -> {
-                    if (prev == null)
-                        start = Point(x, y, current)
-                    else
-                        prev.next = Point(x, y, current)
-                }
-            }
+        val t = array.find { it.first == x }
+        return if (t == null) {
+            array.add(Pair(x, y))
+            true
+        } else {
+            array.remove(t)
+            array.add(Pair(x, y))
+            false
         }
-        return true
     }
 
     /**
@@ -79,34 +46,18 @@ class TableFunction {
      * Вернуть true, если пара была удалена.
      */
     fun remove(x: Double): Boolean {
-        if (start == null) return false
-        else if (start!!.x == x) {
-            start = start?.next
-            return true
+        val t = array.find { it.first == x }
+        return if (t == null) false
+        else {
+            array.remove(t)
+            true
         }
-        var current = start
-        var prev = start
-        while (current != null && current.x < x) {
-            prev = current
-            current = current.next
-        }
-        if (current == null || current.x > x) return false
-        prev!!.next = current.next
-        return true
     }
 
     /**
      * Вернуть коллекцию из всех пар в таблице
      */
-    fun getPairs(): Collection<Pair<Double, Double>> {
-        val result = mutableListOf<Pair<Double, Double>>()
-        var current = start
-        while (current != null) {
-            result.add(Pair(current.x, current.y))
-            current = current.next
-        }
-        return result
-    }
+    fun getPairs(): Collection<Pair<Double, Double>> = array
 
     /**
      * Вернуть пару, ближайшую к заданному x.
@@ -114,11 +65,15 @@ class TableFunction {
      * Если таблица пуста, бросить IllegalStateException.
      */
     fun findPair(x: Double): Pair<Double, Double> {
-        if (start == null) throw IllegalStateException()
-        var current = start!!
-        while (current.next != null && (current.next)!!.x < x)
-            current = current.next!!
-        return Pair(current.x, current.y)
+        if (array.isEmpty()) throw IllegalStateException()
+        var min = Pair(Double.POSITIVE_INFINITY, 0.0)
+        for (i in array) {
+            if (abs(x - i.first) == abs(x - min.first) && min.first > i.first)
+                min = i
+            else if (abs(x - i.first) < abs(x - min.first))
+                min = i
+        }
+        return min
     }
 
     /**
@@ -130,22 +85,43 @@ class TableFunction {
      * Если их нет, но существуют две пары, такие, что x1 < x2 < x или x > x2 > x1, использовать экстраполяцию.
      */
     fun getValue(x: Double): Double {
-        if (start == null) throw  IllegalStateException()
-        var current = start!!
-        var prev: Point? = null
-        while (current.next != null && current.x < x) {
-            prev = current
-            current = current.next!!
+        if (size == 0) throw  IllegalStateException()
+        if (size == 1) return array.first().second
+        var diffLeft = Double.POSITIVE_INFINITY
+        var diffRight = Double.POSITIVE_INFINITY
+        var left = Pair(Double.NEGATIVE_INFINITY, 0.0)
+        var right = Pair(Double.POSITIVE_INFINITY, 0.0)
+        for (i in array) {
+            if (x == i.first)
+                return i.second
+            if (i.first < x && x - i.first < diffLeft) {
+                diffLeft = x - i.first
+                left = i
+            } else if (i.first > x && i.first - x < diffRight) {
+                diffRight = i.first - x
+                right = i
+            }
         }
-        return when {
-            current.x == x -> current.y
-            size == 1 -> current.y
-            current.x < x && current.next == null ->
-                prev!!.y + (x - prev.x) * (current.y - prev.y) / (current.x - prev.x)
-            current.x == start!!.x ->
-                start!!.y + (x - start!!.x) * (start!!.next!!.y - start!!.y) / (start!!.next!!.x - start!!.x)
-            else ->
-                current.y + (x - current.x) * (current.y - prev!!.y) / (current.x - prev.x)
+        if (diffLeft != Double.POSITIVE_INFINITY && diffRight != Double.POSITIVE_INFINITY)
+            return left.second + (right.second - left.second) * (x - left.first) / (right.first - left.first)
+        else if (diffLeft == Double.POSITIVE_INFINITY) {
+            var diff = Double.POSITIVE_INFINITY
+            var right2 = Pair(0.0, 0.0)
+            for (i in array)
+                if (i.first > right.first && i.first - right.first < diff) {
+                    diff = i.first - right.first
+                    right2 = i
+                }
+            return right.second + (right2.second - right.second) * (x - right.first) / (right2.first - right.first)
+        } else {
+            var diff = Double.POSITIVE_INFINITY
+            var left2 = Pair(0.0, 0.0)
+            for (i in array)
+                if (i.first < left.first && left.first - i.first < diff) {
+                    diff = left.first - i.first
+                    left2 = i
+                }
+            return left2.second + (left.second - left2.second) * (x - left2.first) / (left.first - left2.first)
         }
     }
 
@@ -153,19 +129,9 @@ class TableFunction {
      * Таблицы равны, если в них одинаковое количество пар,
      * и любая пара из второй таблицы входит также и в первую
      */
-    override fun equals(other: Any?): Boolean {
-        if (other is TableFunction && size == other.size) {
-            var currentThis = start
-            var currentOther = other.start
-            while (currentThis != null) {
-                if (currentThis.x != currentOther!!.x || currentThis.y != currentOther.y)
-                    return false
-                currentThis = currentThis.next
-                currentOther = currentOther.next
-            }
-            return true
-        } else return false
-    }
+    override fun equals(other: Any?): Boolean =
+        other is TableFunction && size == other.size && array.all { it in other.array }
 
-    override fun hashCode(): Int = start?.hashCode() ?: 0
+    override fun hashCode(): Int = array.toSet().hashCode()
+
 }
